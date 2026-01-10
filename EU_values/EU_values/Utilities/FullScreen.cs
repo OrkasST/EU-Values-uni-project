@@ -1,6 +1,6 @@
 ﻿namespace EU_values.Utilities;
 
-internal class FullScreen
+public class FullScreen
 {
     public void EnterFullScreenMode(Form targetForm)
     {

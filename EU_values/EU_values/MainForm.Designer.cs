@@ -28,18 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
+            LoopTimer = new System.Windows.Forms.Timer(components);
             SuspendLayout();
+            // 
+            // LoopTimer
+            // 
+            LoopTimer.Enabled = true;
+            LoopTimer.Interval = 10;
+            LoopTimer.Tick += LoopTimer_Tick;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            DoubleBuffered = true;
             Name = "MainForm";
             Text = "EU Values";
+            Paint += MainForm_Paint;
+            KeyDown += MainForm_KeyDown;
+            KeyUp += MainForm_KeyUp;
+            MouseDown += MainForm_MouseDown;
+            MouseMove += MainForm_MouseMove;
+            MouseUp += MainForm_MouseUp;
             ResumeLayout(false);
         }
 
         #endregion
+
+        private System.Windows.Forms.Timer LoopTimer;
     }
 }

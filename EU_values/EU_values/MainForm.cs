@@ -1,13 +1,58 @@
-namespace EU_values
-{
-    public partial class MainForm : Form
-    {
-        private Utilities.FullScreen fullScreen = new Utilities.FullScreen();
-        public MainForm()
-        {
-            InitializeComponent();
+using EU_values.Game;
+using EU_values.Game.MainLoopUtilities.StateManagement;
+using EU_values.Utilities;
+using EU_values.Utilities.Events;
 
-            fullScreen.EnterFullScreenMode(this);
-        }
+namespace EU_values;
+
+public partial class MainForm : Form
+{
+    private Utilities.FullScreen fullScreen = new Utilities.FullScreen();
+    private GameManager gameManager = new GameManager();
+    public MainForm()
+    {
+        InitializeComponent();
+
+        gameManager.Initialize(this);
+        //fullScreen.EnterFullScreenMode(this);
+
+    }
+
+    private void LoopTimer_Tick(object sender, EventArgs e)
+    {
+        if (gameManager.State.CurrentState == States.IsUpdating) return;
+
+        gameManager.UpdateGameState();
+        this.Refresh();
+    }
+
+    private void MainForm_Paint(object sender, PaintEventArgs e)
+    {
+        if (gameManager.State.CurrentState == States.IsUpdating) return;
+        gameManager.RenderGameObjects(e.Graphics);
+    }
+
+    private void MainForm_KeyUp(object sender, KeyEventArgs e)
+    {
+        InputHandler.AddEvent(e);
+    }
+    private void MainForm_KeyDown(object sender, KeyEventArgs e)
+    {
+        InputHandler.AddEvent(e);
+    }
+
+
+
+    private void MainForm_MouseDown(object sender, MouseEventArgs e)
+    {
+        InputHandler.AddEvent(new GameMouseEvent(GameUserEventType.MouseMove, e.Location, e.Button));
+    }
+    private void MainForm_MouseUp(object sender, MouseEventArgs e)
+    {
+        InputHandler.AddEvent(new GameMouseEvent(GameUserEventType.MouseMove, e.Location, e.Button));
+    }
+    private void MainForm_MouseMove(object sender, MouseEventArgs e)
+    {
+        InputHandler.AddEvent(new GameMouseEvent(GameUserEventType.MouseMove, e.Location, e.Button));
     }
 }
