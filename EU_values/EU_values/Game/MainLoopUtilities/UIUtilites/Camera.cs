@@ -9,6 +9,7 @@ public class Camera
     {
         SetOffset(centerX, centerY, focusObjectX, focusObjectY);
     }
+    public Camera() : this(0,0,0,0) { }
 
     public void UpdateOffset(int x, int y)
     {

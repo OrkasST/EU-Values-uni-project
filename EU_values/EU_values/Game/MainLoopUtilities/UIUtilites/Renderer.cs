@@ -8,6 +8,7 @@ namespace EU_values.Game.MainLoopUtilities.UIUtilities;
 public class Renderer
 {
     public Color ClearColor { get; private set; } = Color.Black;
+    private Size _cameraOffset = Size.Empty;
 
     public Renderer(Color clearColor)
     {
@@ -29,32 +30,52 @@ public class Renderer
 
     private void DrawByType(Graphics g, DrawableObject obj)
     {
-        if (obj is GameUIText)
+        if (obj.GetType() == typeof(GameUIText))
         {
             GameUIText textObj = (GameUIText)obj;
             RenderDrawable(g, textObj);
         }
-        else if (obj is ComplexDrawableObject)
-        {
-            ComplexDrawableObject complexObj = (ComplexDrawableObject)obj;
-            Render(g, complexObj.RenderList);
-        }
-        else if (obj is Box)
+        else if (obj.GetType() == typeof(Box))
         {
             Box box = (Box)obj;
             RenderDrawable(g, box);
+        }
+        else if (obj is ComplexDrawableObject)
+        {
+            if (obj.GetType() == typeof(AnimatedObject))
+            {
+                AnimatedObject animObj = (AnimatedObject)obj;
+                RenderDrawable(g, animObj);
+                return;
+            }
+
+            ComplexDrawableObject complexObj = (ComplexDrawableObject)obj;
+            Render(g, complexObj.RenderList);
         }
     }
 
     private void RenderDrawable(Graphics g, GameUIText obj)
     {
-        g.DrawString(obj.Text, obj.Font, new SolidBrush(obj.TextColor), obj.Position);
+        if (obj.IsCameraAffected) g.DrawString(obj.Text, obj.Font, new SolidBrush(obj.TextColor), obj.Position+_cameraOffset);
+        else g.DrawString(obj.Text, obj.Font, new SolidBrush(obj.TextColor), obj.Position);
     }
     private void RenderDrawable(Graphics g, Box obj)
     {
         var brush = new SolidBrush(obj.BackgroundColor);
-        var destRect = new Rectangle(obj.Position, obj.Size);
+        var destRect = new Rectangle(obj.IsCameraAffected ? obj.Position + _cameraOffset : obj.Position, obj.Size);
 
-        g.FillRectangle(brush, destRect);
+        if(!obj.HasImage) g.FillRectangle(brush, destRect);
+        else g.DrawImage(obj.BackgroundImage, destRect);
+    }
+    private void RenderDrawable(Graphics g, AnimatedObject obj)
+    {
+        var destRect = new Rectangle(obj.IsCameraAffected ? obj.Position + _cameraOffset : obj.Position, obj.Size);
+
+        g.DrawImage(obj.BackgroundImage, destRect, obj.SourceRectangle, GraphicsUnit.Pixel);
+    }
+
+    public void ApplyCameraOffset(int offsetX, int offsetY)
+    {
+        _cameraOffset = new Size(offsetX, offsetY);
     }
 }

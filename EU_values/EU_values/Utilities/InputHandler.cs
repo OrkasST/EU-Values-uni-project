@@ -4,19 +4,30 @@ namespace EU_values.Utilities;
 
 public static class InputHandler
 {
-    public static List<KeyEventArgs> KeyboardEvents = [];
+    public static GameKeyboardEvent[] KeyboardEvents = new GameKeyboardEvent[3];
     public static GameMouseEvent[] MouseEvents = new GameMouseEvent[3];
 
     public static GameMouseEvent LastMouseEvent => MouseEvents[0];
-    public static KeyEventArgs LastKeyboardEvent => KeyboardEvents[0];
+    public static GameKeyboardEvent LastKeyboardEvent => KeyboardEvents[0];
 
     public static bool NoMouseEvents = true;
     public static bool NoKeyboardEvents = true;
 
 
-    public static void AddEvent(KeyEventArgs e)
+    public static void AddEvent(GameKeyboardEvent e)
     {
-        KeyboardEvents.Insert(KeyboardEvents.Count, e);
+        if (KeyboardEvents[0] == null) KeyboardEvents[0] = e;
+        else if (KeyboardEvents[1] == null)
+        {
+            KeyboardEvents[1] = KeyboardEvents[0];
+            KeyboardEvents[0] = e;
+        }
+        else
+        {
+            KeyboardEvents[2] = KeyboardEvents[1];
+            KeyboardEvents[1] = KeyboardEvents[0];
+            KeyboardEvents[0] = e;
+        }
         NoKeyboardEvents = false;
     }
     public static void AddEvent(GameMouseEvent e)
@@ -35,11 +46,4 @@ public static class InputHandler
         }
         NoMouseEvents = false;
     }
-
-    //public static void ClearEvents()
-    //{
-    //    KeyboardEvents.Clear();
-    //    NoKeyboardEvents = true;
-    //    NoMouseEvents = true;
-    //}
 }

@@ -1,9 +1,12 @@
 ﻿using EU_values.Game.MainLoopUtilities.UIUtilities;
 using EU_values.Game.MainLoopUtilities.StateManagement;
-using EU_values.Utilities;
 using EU_values.Game.MainLoopUtilities.StateManagement.Scenes;
+using EU_values.Game.MainLoopUtilities.StateManagement.Scenes.LevelScenes;
+using EU_values.Utilities;
 
 namespace EU_values.Game;
+
+public enum GameLevels { None, Level_1 }
 
 internal class GameManager
 {
@@ -14,7 +17,10 @@ internal class GameManager
     private Scene _currentScene;
 
     public GameState State { get; private set; }
+    public GameLevels CurrentGameLevel { get; private set; }
     public Clock Clock { get; private set; }
+
+    public Camera GameCamera { get; private set; }
 
     public GameManager() { 
         _renderer = new Renderer(Color.Black);
@@ -25,6 +31,7 @@ internal class GameManager
 
         State = new GameState();
         Clock = new Clock();
+        GameCamera = new Camera();
     }
 
     public void Initialize(Form form)
@@ -32,7 +39,7 @@ internal class GameManager
         //SettingsApplier.ReadSettings();
 
         //if (SettingsApplier.GameSettings)
-
+        //CurrentGameLevel = GameLevels.Level_1;
         ChangeGameState(States.InMainMenu);
     }
     public void UpdateGameState()
@@ -41,12 +48,22 @@ internal class GameManager
         if (State.CurrentState == States.IsUpdating) return;
 
         Clock.Tick();
-        State.SetState(States.IsUpdating);
 
+        if (_currentScene.AwaitedGameState != States.None && State.CurrentState != _currentScene.AwaitedGameState)
+        {
+            if (_currentScene.AwaitedGameState == States.InGameActive)
+            {
+                CurrentGameLevel = _currentScene.AwaitedLevel;
+                ChangeGameState(States.InGameActive);
+            }
+        }
+
+        State.SetState(States.IsUpdating);
         _currentScene.HandleUserInput();
         _currentScene.Update(Clock.TimeDelta, Clock.TimeRemaining);
 
         //InputHandler.ClearEvents();
+        State.SetState(State.LastState);
     }
     public void RenderGameObjects(Graphics g)
     {
@@ -61,6 +78,17 @@ internal class GameManager
         {
             case States.InMainMenu: LoadScene(new MainMenuScene()); break;
 
+            case States.InGameActive: LoadLevel(); break;
+
+            default: break;
+        }
+    }
+
+    private void LoadLevel()
+    {
+        switch (CurrentGameLevel)
+        {
+            case GameLevels.Level_1: LoadScene(new Level1Scene(GameCamera.SetOffset)); break;
             default: break;
         }
     }

@@ -1,7 +1,10 @@
 ﻿using EU_values.Game.BaseClasses;
 using EU_values.Game.Interfaces;
+using System.Drawing;
 
 namespace EU_values.Game.UI.Elements;
+
+public enum BoxType { Default, Hover, Click }
 
 internal class GameUIButton : ComplexDrawableObject, IInteractive
 {
@@ -20,38 +23,60 @@ internal class GameUIButton : ComplexDrawableObject, IInteractive
     public bool HasMouseOver { get; set; } = false;
     public bool IsClickStarted { get; set; } = false;
 
-    public GameUIButton (string name, int x, int y, string text) : base (name, x, y, 210, 60)
+    public GameUIButton (string name, int x, int y, string text, bool? isCameraAffected = false) : base (name, x, y, 210, 60)
     {
         _defaultBox = new Box(name + "_default", x, y, 210, 60, Color.Gray);
         _hoverBox = new Box(name + "_hover", x-1, y-1, 210+2, 60+2, Color.Yellow);
         _clickBox = new Box(name + "_click", x, y, 210, 60, Color.Blue);
 
-        _defaultText = new GameUIText(name+"_text", x, y, text, new Font("Times New Roman", 55), Color.Black);
-        _hoverText = new GameUIText(name+"_text", x, y, text, new Font("Times New Roman", 55), Color.Black);
-        _clickText = new GameUIText(name+"_text", x, y, text, new Font("Times New Roman", 55), Color.Yellow);
+        _defaultText = new GameUIText(name+"_text", x, y, text, "Times New Roman", 55, Color.Black);
+        _hoverText = new GameUIText(name+"_text", x, y, text, "Times New Roman", 55, Color.Black);
+        _clickText = new GameUIText(name+"_text", x, y, text, "Times New Roman", 55, Color.Yellow);
         AddObjects();
     }
-    public GameUIButton(string name, int x, int y, string text, Color boxColor, Color textColor) : base(name, x, y, 30, 15)
+    public GameUIButton(string name, int x, int y, string text, Color boxColor, Color textColor, bool? isCameraAffected = false) : base(name, x, y, 30, 15)
     {
         _defaultBox = new Box(name+"_default", x, y, 30, 15, boxColor);
         _hoverBox = new Box(name + "_hover", x-1, y-1, 30+1, 15+1, boxColor);
         _clickBox = new Box(name + "_click", x, y, 30, 15, boxColor);
 
-        _defaultText = new GameUIText(name + "_text", x, y, text, new Font("Times New Roman", 120), textColor);
-        _hoverText = new GameUIText(name + "_text", x, y, text, new Font("Times New Roman", 120), textColor);
-        _clickText = new GameUIText(name + "_text", x, y, text, new Font("Times New Roman", 120), textColor);
+        _defaultText = new GameUIText(name + "_text", x, y, text, "Times New Roman", 120, textColor);
+        _hoverText = new GameUIText(name + "_text", x, y, text, "Times New Roman", 120, textColor);
+        _clickText = new GameUIText(name + "_text", x, y, text, "Times New Roman", 120, textColor);
         AddObjects();
     }
-    public GameUIButton(string name, int x, int y, string text, Size boxSize, int textSize) : base(name, x,y,boxSize)
+    public GameUIButton(string name, int x, int y, int width, int height, string text, int textX, int textY, int textSize, bool? isCameraAffected = false) : base(name, x,y, width, height)
     {
         _defaultBox = new Box(name + "_default", x, y, 30, 15, Color.Gray);
         _hoverBox = new Box(name + "_hover", x, y, 30, 15, Color.Gray);
         _clickBox = new Box(name + "_click", x, y, 30, 15, Color.Gray);
 
-        _defaultText = new GameUIText(name + "_text", x, y, text, new Font("Times New Roman", 120), Color.Black);
-        _hoverText = new GameUIText(name + "_text", x, y, text, new Font("Times New Roman", 120), Color.Black);
-        _clickText = new GameUIText(name + "_text", x, y, text, new Font("Times New Roman", 120), Color.Black);
+        _defaultText = new GameUIText(name + "_text", x, y, text, "Times New Roman", 120, Color.Black);
+        _hoverText = new GameUIText(name + "_text", x, y, text, "Times New Roman", 120, Color.Black);
+        _clickText = new GameUIText(name + "_text", x, y, text, "Times New Roman", 120, Color.Black);
         AddObjects();
+    }
+
+    public void ChangeBoxBackground(BoxType boxType, Color color)
+    {
+        switch (boxType)
+        {
+            case BoxType.Default: _defaultBox.BackgroundColor = color; break;
+            case BoxType.Hover: _hoverBox.BackgroundColor = color; break;
+            case BoxType.Click: _clickBox.BackgroundColor = color; break;
+            default: break;
+        }
+    }
+
+    public void ChangeBoxBackground(BoxType boxType, Image image)
+    {
+        switch (boxType)
+        {
+            case BoxType.Default: _defaultBox.BackgroundImage = image; break;
+            case BoxType.Hover: _hoverBox.BackgroundImage = image; break;
+            case BoxType.Click: _clickBox.BackgroundImage = image; break;
+            default: break;
+        }
     }
 
     private void AddObjects()

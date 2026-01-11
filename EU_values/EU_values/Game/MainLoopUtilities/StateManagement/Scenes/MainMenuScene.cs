@@ -6,20 +6,25 @@ namespace EU_values.Game.MainLoopUtilities.StateManagement.Scenes;
 
 public class MainMenuScene : Scene
 {
-    private GameUIText label1 = new GameUIText("MainMenu_Label1", 10, 10, "Hello My Game", new Font("Times New Roman", 26));
+    private GameUIText label1 = new GameUIText("MainMenu_Label1", 10, 10, "Hello My Game", "Times New Roman", 26);
     private GameUIButton button1 = new GameUIButton("MainMenu_button1", 10, 80, "Button 1");
-    private GameUIText MouseCoordinates = new GameUIText("MainMenu_MouseCoordinates", 10, 160, "X:0 Y:0", new Font("Times New Roman", 20));
+    private GameUIText MouseCoordinates = new GameUIText("MainMenu_MouseCoordinates", 10, 160, "X:0 Y:0", "Times New Roman", 20);
 
     private Dictionary<string, Action> _actionList;
 
-    public MainMenuScene() {
+    public MainMenuScene()
+    {
         RenderList.AddObject(0, label1);
         RenderList.AddObject(0, button1);
         RenderList.AddObject(0, MouseCoordinates);
 
         _actionList = new Dictionary<string, Action>
         {
-            [button1.Name] = () => { }
+            [button1.Name] = () =>
+            {
+                _nextState = States.InGameActive;
+                _nextLevel = GameLevels.Level_1;
+            }
         };
     }
 
@@ -38,7 +43,7 @@ public class MainMenuScene : Scene
                     var iObj = (IInteractive)obj;
 
                     MouseCoordinates.Text += $"\nO.X: {obj.Position.X} | O.Y: {obj.Position.Y}";
-                    MouseCoordinates.Text += $"\nO.X2: {obj.Position.X+obj.Size.Width} | O.Y2: {obj.Position.Y+obj.Size.Height}";
+                    MouseCoordinates.Text += $"\nO.X2: {obj.Position.X + obj.Size.Width} | O.Y2: {obj.Position.Y + obj.Size.Height}";
 
                     if (obj.Position.X <= coordinates.X && obj.Position.Y <= coordinates.Y
                         && obj.Position.X + obj.Size.Width >= coordinates.X && obj.Position.Y + obj.Size.Height >= coordinates.Y)
@@ -50,5 +55,16 @@ public class MainMenuScene : Scene
                     else if (iObj.HasMouseOver) iObj.OnMouseLeave();
                 }
         }
+    }
+
+    public override void Update(int timeDelta, int timeRemaining)
+    {
+        base.Update(timeDelta, timeRemaining);
+        if (_nextState != States.None)
+        {
+            AwaitedGameState = _nextState;
+            //MessageBox.Show($"{AwaitedGameState}");
+        }
+        if (_nextLevel != GameLevels.None) AwaitedLevel = _nextLevel;
     }
 }

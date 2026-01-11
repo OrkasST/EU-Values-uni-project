@@ -44,8 +44,10 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             DoubleBuffered = true;
+            Location = new Point(1000, 100);
             Name = "MainForm";
             Text = "EU Values";
+            WindowState = FormWindowState.Maximized;
             Paint += MainForm_Paint;
             KeyDown += MainForm_KeyDown;
             KeyUp += MainForm_KeyUp;

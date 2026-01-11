@@ -34,11 +34,11 @@ public partial class MainForm : Form
 
     private void MainForm_KeyUp(object sender, KeyEventArgs e)
     {
-        InputHandler.AddEvent(e);
+        InputHandler.AddEvent(new GameKeyboardEvent(GameUserEventType.KeyUp, e.KeyCode));
     }
     private void MainForm_KeyDown(object sender, KeyEventArgs e)
     {
-        InputHandler.AddEvent(e);
+        InputHandler.AddEvent(new GameKeyboardEvent(GameUserEventType.KeyDown, e.KeyCode));
     }
 
 
