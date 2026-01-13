@@ -6,7 +6,7 @@ using EU_values.Utilities;
 
 namespace EU_values.Game;
 
-public enum GameLevels { None, Level_1 }
+public enum GameLevels { None, Level_1, Level_2 }
 
 internal class GameManager
 {
@@ -17,7 +17,6 @@ internal class GameManager
     private Scene _currentScene;
 
     public GameState State { get; private set; }
-    public GameLevels CurrentGameLevel { get; private set; }
     public Clock Clock { get; private set; }
 
     public Camera GameCamera { get; private set; }
@@ -39,7 +38,8 @@ internal class GameManager
         //SettingsApplier.ReadSettings();
 
         //if (SettingsApplier.GameSettings)
-        //CurrentGameLevel = GameLevels.Level_1;
+        MessageBox.Show($"{form.Width}|{form.Height}");
+
         ChangeGameState(States.InMainMenu);
     }
     public void UpdateGameState()
@@ -49,11 +49,11 @@ internal class GameManager
 
         Clock.Tick();
 
-        if (_currentScene.AwaitedGameState != States.None && State.CurrentState != _currentScene.AwaitedGameState)
+        if (_currentScene.AwaitedGameState != States.None)
         {
             if (_currentScene.AwaitedGameState == States.InGameActive)
             {
-                CurrentGameLevel = _currentScene.AwaitedLevel;
+                State.SetGameLevel(_currentScene.AwaitedLevel);
                 ChangeGameState(States.InGameActive);
             }
         }
@@ -62,7 +62,6 @@ internal class GameManager
         _currentScene.HandleUserInput();
         _currentScene.Update(Clock.TimeDelta, Clock.TimeRemaining);
 
-        //InputHandler.ClearEvents();
         State.SetState(State.LastState);
     }
     public void RenderGameObjects(Graphics g)
@@ -86,9 +85,10 @@ internal class GameManager
 
     private void LoadLevel()
     {
-        switch (CurrentGameLevel)
+        switch (State.CurrentGameLevel)
         {
-            case GameLevels.Level_1: LoadScene(new Level1Scene(GameCamera.SetOffset)); break;
+            case GameLevels.Level_1: LoadScene(new Level1Scene(State.LastGameLevel, GameCamera.SetOffset)); break;
+            case GameLevels.Level_2: LoadScene(new Level2Scene(State.LastGameLevel, GameCamera.SetOffset)); break;
             default: break;
         }
     }

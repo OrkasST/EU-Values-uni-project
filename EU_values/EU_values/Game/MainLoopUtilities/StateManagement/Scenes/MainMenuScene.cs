@@ -6,14 +6,18 @@ namespace EU_values.Game.MainLoopUtilities.StateManagement.Scenes;
 
 public class MainMenuScene : Scene
 {
-    private GameUIText label1 = new GameUIText("MainMenu_Label1", 10, 10, "Hello My Game", "Times New Roman", 26);
-    private GameUIButton button1 = new GameUIButton("MainMenu_button1", 10, 80, "Button 1");
-    private GameUIText MouseCoordinates = new GameUIText("MainMenu_MouseCoordinates", 10, 160, "X:0 Y:0", "Times New Roman", 20);
+    private GameUIText label1;
+    private GameUIButton button1;
+    private GameUIText MouseCoordinates;
 
     private Dictionary<string, Action> _actionList;
 
     public MainMenuScene()
     {
+        label1 = new GameUIText("MainMenu_Label1", 10, 10, "Hello My Game", "Times New Roman", 26);
+        button1 = new GameUIButton("MainMenu_button1", 10, 80, "Button 1");
+        MouseCoordinates = new GameUIText("MainMenu_MouseCoordinates", 10, 160, "X:0 Y:0", "Times New Roman", 20);
+
         RenderList.AddObject(0, label1);
         RenderList.AddObject(0, button1);
         RenderList.AddObject(0, MouseCoordinates);
@@ -35,7 +39,7 @@ public class MainMenuScene : Scene
             var coordinates = InputHandler.LastMouseEvent.Location;
             MouseCoordinates.Text = $"X: {coordinates.X} | Y: {coordinates.Y}";
 
-            foreach (var layer in RenderList.Layers)
+            foreach (var layer in RenderList.Layers())
                 foreach (var obj in layer)
                 {
                     if (!(obj is IInteractive)) continue;
@@ -60,11 +64,7 @@ public class MainMenuScene : Scene
     public override void Update(int timeDelta, int timeRemaining)
     {
         base.Update(timeDelta, timeRemaining);
-        if (_nextState != States.None)
-        {
-            AwaitedGameState = _nextState;
-            //MessageBox.Show($"{AwaitedGameState}");
-        }
+
         if (_nextLevel != GameLevels.None) AwaitedLevel = _nextLevel;
     }
 }

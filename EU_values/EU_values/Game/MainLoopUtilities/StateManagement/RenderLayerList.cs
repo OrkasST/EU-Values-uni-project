@@ -4,18 +4,49 @@ namespace EU_values.Game.MainLoopUtilities.StateManagement;
 
 public class RenderLayerList
 {
-    public List<List<DrawableObject>> Layers { get; private set; } = [];
+    private List<List<DrawableObject>> _bottomLayers = [];
+    private List<List<DrawableObject>> _topLayers = [];
+
+    public List<List<DrawableObject>> Layers()
+    {
+        var layers = new List<List<DrawableObject>>();
+
+        foreach (var layer in _bottomLayers)
+            layers.Add(layer);
+        foreach (var layer in _topLayers)
+            layers.Add(layer);
+
+        return layers;
+    }
 
     public int AddObject(int layer, DrawableObject obj)
     {
-        if (layer >= Layers.Count) Layers.Add(new List<DrawableObject> { obj });
-        else Layers[layer].Add(obj);
+        if (layer >= _bottomLayers.Count)
+        {
+            _bottomLayers.Add(new List<DrawableObject> { obj });
+            layer = _bottomLayers.Count - 1;
+        }
+        else if (layer < 0) return AddTopObject(-layer, obj);
+        else _bottomLayers[layer].Add(obj);
 
-        return Layers[layer].Count - 1;
+        return _bottomLayers[layer].Count - 1;
+    }
+
+    private int AddTopObject(int layer, DrawableObject obj)
+    {
+        if (layer >= _topLayers.Count)
+        {
+            _topLayers.Add(new List<DrawableObject> { obj });
+            layer = _topLayers.Count-1;
+        }
+        else _topLayers[layer].Add(obj);
+
+        return _topLayers[layer].Count-1;
     }
 
     public void ChangeObject(int layer, int index, DrawableObject newObj)
     {
-        Layers[layer][index] = newObj;
+        if (layer >= 0) _bottomLayers[layer][index] = newObj;
+        else _topLayers[(-layer) - 1][index] = newObj;
     }
 }

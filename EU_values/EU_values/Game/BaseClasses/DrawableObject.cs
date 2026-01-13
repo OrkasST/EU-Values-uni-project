@@ -10,6 +10,7 @@ public abstract class DrawableObject
     public Image BackgroundImage { get; set; } = Image.FromFile("..\\..\\..\\Resources\\Images\\No-Image.bmp");
     public bool HasImage { get; private set; } = false;
     public bool IsCameraAffected { get; private set; }
+    public bool IsVisible { get; private set; } = true;
 
     public DrawableObject(string name, int x, int y, bool? isCameraAffected = false) {
         Name = name;
@@ -36,4 +37,6 @@ public abstract class DrawableObject
     }
 
     public abstract void Update(int timeDelta, int timeRemaining);
+
+    public bool ToggleVisibility() => IsVisible = !IsVisible;
 }

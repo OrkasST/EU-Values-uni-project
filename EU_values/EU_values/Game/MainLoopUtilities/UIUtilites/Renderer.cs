@@ -1,7 +1,6 @@
 ﻿using EU_values.Game.BaseClasses;
 using EU_values.Game.MainLoopUtilities.StateManagement;
 using EU_values.Game.UI.Elements;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace EU_values.Game.MainLoopUtilities.UIUtilities;
 
@@ -21,13 +20,17 @@ public class Renderer
     }
 
     public void Render(Graphics g, RenderLayerList list) {
-        for (int layer = 0; layer < list.Layers.Count; layer++)
+        var layers = list.Layers();
+        for (int layer = 0; layer < layers.Count; layer++)
         {
-            for (int i = 0; i < list.Layers[layer].Count; i++)
-                DrawByType(g, list.Layers[layer][i]);
+            for (int i = 0; i < layers[layer].Count; i++)
+            {
+                if (!layers[layer][i].IsVisible) continue;
+                DrawByType(g, layers[layer][i]);
+            }
         }
     }
-
+    
     private void DrawByType(Graphics g, DrawableObject obj)
     {
         if (obj.GetType() == typeof(GameUIText))

@@ -1,5 +1,4 @@
 ﻿using EU_values.Game.BaseClasses;
-using EU_values.Game.UI.Elements;
 using EU_values.Utilities;
 using EU_values.Utilities.Events;
 
@@ -54,6 +53,9 @@ public class Player
             Body.StopAnimation();
         }
     }
+    
+    public void SetPosition(Point point) => this.Body.Position = point;
+    public void SetPosition(int x, int y) => SetPosition(new Point(x, y));
 
     private AnimationType GetNextAnimation(GameKeyboardEvent e, AnimationType anim1, AnimationType anim2)
     {
@@ -82,11 +84,11 @@ public class Player
     {
         if (!Body.IsAnimationStarted)
         {
-            Body.StartAnimation(8000, 0, 1*(int)CurrentAnimation, (int)CurrentAnimation <= 4 ? 3 : (int)CurrentAnimation <= 6 ? 2 : 1, (int)CurrentAnimation,
+            Body.StartAnimation(5000, 0, 1*(int)CurrentAnimation, (int)CurrentAnimation <= 4 ? 3 : (int)CurrentAnimation <= 6 ? 2 : 1, (int)CurrentAnimation,
                 !IsAnimationAirborne(), timeRemaining);
         } else
         {
-            if (_isInAir && Body.CurrentFrame == Body.CurrentLastFrame)// && Body.IsReadyToSwitchFrame(timeRemaining))
+            if (_isInAir && Body.CurrentFrame == Body.CurrentLastFrame)
             {
                 switch (CurrentAnimation)
                 {
@@ -107,7 +109,7 @@ public class Player
             if (IsInFrontOfDoor && CurrentAnimation == AnimationType.BackWalk)
             {
                 _isOnTheDoorWay = true;
-                Body.Position = new Point(Body.Position.X, Body.Position.Y - Speed.Y);
+                SetPosition(new Point(Body.Position.X, Body.Position.Y - Speed.Y));
             }
         } 
     }

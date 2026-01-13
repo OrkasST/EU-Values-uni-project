@@ -1,6 +1,5 @@
 ﻿using EU_values.Game.BaseClasses;
 using EU_values.Game.Interfaces;
-using System.Drawing;
 
 namespace EU_values.Game.UI.Elements;
 

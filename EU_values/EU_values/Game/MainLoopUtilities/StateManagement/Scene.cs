@@ -12,9 +12,13 @@ public abstract class Scene
 
     public virtual void Update(int timeDelta, int timeRemaining)
     {
-        for (int layer = 0; layer < RenderList.Layers.Count; layer++)
-            for (int i = 0; i < RenderList.Layers[layer].Count; i++)
-                RenderList.Layers[layer][i].Update(timeDelta, timeRemaining);
+        var layers = this.RenderList.Layers();
+
+        for (int layer = 0; layer < layers.Count; layer++)
+            for (int i = 0; i < layers[layer].Count; i++)
+                layers[layer][i].Update(timeDelta, timeRemaining);
+
+        if (_nextState != States.None) AwaitedGameState = _nextState;
     }
 
     public virtual void HandleUserInput() { }

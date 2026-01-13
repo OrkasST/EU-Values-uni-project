@@ -18,21 +18,19 @@
         {
          "draworder":"topdown",
          "id":2,
-         "name":"DoorWay",
+         "name":"Door",
          "objects":[
                 {
-                 "height":397.638,
-                 "id":1,
-                 "name":"",
+                 "height":144.44,
+                 "id":2,
+                 "name":"Level_1",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":193.257,
-                 "x":1813.01,
-                 "y":970
+                 "width":887.273,
+                 "x":928.541,
+                 "y":1009.79
                 }],
-         "offsetx":6.95171,
-         "offsety":5.56137,
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -43,18 +41,18 @@
         {
          "draworder":"topdown",
          "id":3,
-         "name":"Door",
+         "name":"DoorWay",
          "objects":[
                 {
-                 "height":183.525,
-                 "id":2,
-                 "name":"Level_2",
+                 "height":272.114,
+                 "id":1,
+                 "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":180.744,
-                 "x":1825.52,
-                 "y":928.748
+                 "width":914.355,
+                 "x":916.934,
+                 "y":999.471
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -63,7 +61,7 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":4,
+ "nextobjectid":3,
  "orientation":"orthogonal",
  "renderorder":"left-down",
  "tiledversion":"1.11.2",
@@ -71,9 +69,9 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/..\/..\/..\/..\/..\/..\/..\/Downloads\/ProjectImages\/Level_1_tileset.tsx"
+         "source":"..\/..\/..\/..\/..\/..\/..\/..\/Downloads\/ProjectImages\/Level_2_tileset.tsx"
         }],
- "tilewidth":2499,
+ "tilewidth":2318,
  "type":"map",
  "version":"1.10",
  "width":1
