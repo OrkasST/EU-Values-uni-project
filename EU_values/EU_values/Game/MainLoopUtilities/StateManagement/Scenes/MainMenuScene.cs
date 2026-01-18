@@ -61,9 +61,9 @@ public class MainMenuScene : Scene
         }
     }
 
-    public override void Update(int timeDelta, int timeRemaining)
+    public override void Update(float timeDelta, int timeRemaining, int timeDifference)
     {
-        base.Update(timeDelta, timeRemaining);
+        base.Update(timeDelta, timeRemaining, timeDifference);
 
         if (_nextLevel != GameLevels.None) AwaitedLevel = _nextLevel;
     }

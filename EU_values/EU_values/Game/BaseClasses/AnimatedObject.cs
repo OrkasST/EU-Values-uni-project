@@ -35,9 +35,9 @@ public class AnimatedObject : ComplexDrawableObject
     public bool IsAnimationStarted { get; private set; } = false;
     public bool IsAnimationInfinite { get; private set; } = false;
 
-    public Rectangle SourceRectangle { get => new Rectangle(CurrentXFrame * Size.Width, CurrentYFrame * Size.Height, Size.Width, Size.Height); }
+    public RectangleF SourceRectangle { get => new RectangleF(CurrentXFrame * Size.Width, CurrentYFrame * Size.Height, Size.Width, Size.Height); }
 
-    public AnimatedObject(string name, int x, int y, int width, int height, Image frameset, int xFramesNumber, int yFramesNumber, bool? isCameraAffected = false) : base(name, x, y, width, height, frameset, isCameraAffected)
+    public AnimatedObject(string name, float x, float y, float width, float height, Image frameset, int xFramesNumber, int yFramesNumber, bool? isCameraAffected = false) : base(name, x, y, width, height, frameset, isCameraAffected)
     {
         CurrentFrame = 0;
         CurrentXFrame = 0;
@@ -105,7 +105,7 @@ public class AnimatedObject : ComplexDrawableObject
         _stepStartTime = timeRemaining;
     }
 
-    public override void Update(int timeDelta, int timeRemaining) {
+    public override void Update(float timeDelta, int timeRemaining, int timeDifference) {
         if (IsAnimationStarted)
         {
             AnimationStep(timeRemaining);

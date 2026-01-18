@@ -84,7 +84,7 @@ internal class GameUIButton : ComplexDrawableObject, IInteractive
         _indText = RenderList.AddObject(1, _defaultText);
     }
 
-    public override void Update(int timeDelta, int timeRemaining) { }
+    public override void Update(float timeDelta, int timeRemaining, int timeDifference) { }
 
     // Interface Implementation
     public void OnMouseEnter() {

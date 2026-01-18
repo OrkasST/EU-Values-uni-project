@@ -33,18 +33,21 @@ internal class GameManager
         GameCamera = new Camera();
     }
 
-    public void Initialize(Form form)
+    public void Initialize()
     {
         //SettingsApplier.ReadSettings();
 
         //if (SettingsApplier.GameSettings)
-        MessageBox.Show($"{form.Width}|{form.Height}");
 
         ChangeGameState(States.InMainMenu);
     }
-    public void UpdateGameState()
+    public void UpdateGameState(Form form)
     {
-        if (State.CurrentState == States.NotInitialized) return;
+        if (State.CurrentState == States.NotInitialized)
+        {
+            Initialize();
+            return;
+        }
         if (State.CurrentState == States.IsUpdating) return;
 
         Clock.Tick();
@@ -60,13 +63,15 @@ internal class GameManager
 
         State.SetState(States.IsUpdating);
         _currentScene.HandleUserInput();
-        _currentScene.Update(Clock.TimeDelta, Clock.TimeRemaining);
+        _currentScene.Update(Clock.TimeDelta, Clock.TimeRemaining, Clock.TimeDifference);
 
         State.SetState(State.LastState);
     }
     public void RenderGameObjects(Graphics g)
     {
         if (State.CurrentState == States.NotInitialized) return;
+        if (State.CurrentState == States.IsUpdating) return;
+
         _renderer.ClearScreen(g);
         _renderer.Render(g, _currentLayerList);
     }

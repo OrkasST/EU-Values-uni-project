@@ -14,6 +14,6 @@ internal class Level2Scene: InGameScene
         RenderList.AddObject(1, _player.Body);
 
         ReadData("..\\..\\..\\Resources\\Data\\Level_2.json");
-        GetSceneHitboxes();
+        //GetSceneHitboxes();
     }
 }

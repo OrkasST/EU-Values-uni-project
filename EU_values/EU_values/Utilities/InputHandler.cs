@@ -16,6 +16,8 @@ public static class InputHandler
 
     public static void AddEvent(GameKeyboardEvent e)
     {
+        if (KeyboardEvents[0] != null && e.EventType == LastKeyboardEvent.EventType && e.Key == LastKeyboardEvent.Key) return;
+
         if (KeyboardEvents[0] == null) KeyboardEvents[0] = e;
         else if (KeyboardEvents[1] == null)
         {

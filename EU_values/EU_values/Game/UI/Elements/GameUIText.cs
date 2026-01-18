@@ -18,6 +18,6 @@ public class GameUIText : DrawableObject
         TextColor = color;
     }
 
-    public override void Update(int timeDelta, int timeRemaining) { }
+    public override void Update(float timeDelta, int timeRemaining, int timeDifference) { }
     public void Update(Action action) => action();
 }

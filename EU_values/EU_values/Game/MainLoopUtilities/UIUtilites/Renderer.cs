@@ -65,14 +65,14 @@ public class Renderer
     private void RenderDrawable(Graphics g, Box obj)
     {
         var brush = new SolidBrush(obj.BackgroundColor);
-        var destRect = new Rectangle(obj.IsCameraAffected ? obj.Position + _cameraOffset : obj.Position, obj.Size);
+        var destRect = new RectangleF(obj.IsCameraAffected ? obj.Position + _cameraOffset : obj.Position, obj.Size);
 
         if(!obj.HasImage) g.FillRectangle(brush, destRect);
         else g.DrawImage(obj.BackgroundImage, destRect);
     }
     private void RenderDrawable(Graphics g, AnimatedObject obj)
     {
-        var destRect = new Rectangle(obj.IsCameraAffected ? obj.Position + _cameraOffset : obj.Position, obj.Size);
+        var destRect = new RectangleF(obj.IsCameraAffected ? obj.Position + _cameraOffset : obj.Position, obj.Size);
 
         g.DrawImage(obj.BackgroundImage, destRect, obj.SourceRectangle, GraphicsUnit.Pixel);
     }

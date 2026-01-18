@@ -3,23 +3,25 @@
 public class Clock
 {
     public int LastUpdateTime { get; private set; } = DateTime.Now.Millisecond;
-    public int TimeDelta { get; private set; }
+    public int TimeDifference { get; private set; }
     public int TimeRemaining { get; private set; }
+    public float TimeDelta { get; private set; }
     private void UpdateTimeDelta()
     {
-        TimeDelta = DateTime.Now.Millisecond > LastUpdateTime
+        TimeDifference = DateTime.Now.Millisecond > LastUpdateTime
             ? DateTime.Now.Millisecond - LastUpdateTime
             : 1000 - LastUpdateTime + DateTime.Now.Millisecond;
+        TimeDelta = TimeDifference / 1000f;
     }
     private void UpdateTimeRemaining()
     {
-        TimeRemaining += TimeDelta;
+        TimeRemaining += TimeDifference;
     }
 
     public void Tick()
     {
-        LastUpdateTime = DateTime.Now.Millisecond;
         UpdateTimeDelta();
         UpdateTimeRemaining();
+        LastUpdateTime = DateTime.Now.Millisecond;
     }
 }

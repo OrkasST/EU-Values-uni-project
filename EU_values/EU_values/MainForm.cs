@@ -13,22 +13,19 @@ public partial class MainForm : Form
     {
         InitializeComponent();
 
-        gameManager.Initialize(this);
+        //gameManager.Initialize(this);
         //fullScreen.EnterFullScreenMode(this);
 
     }
 
     private void LoopTimer_Tick(object sender, EventArgs e)
     {
-        if (gameManager.State.CurrentState == States.IsUpdating) return;
-
-        gameManager.UpdateGameState();
+        gameManager.UpdateGameState(this);
         this.Refresh();
     }
 
     private void MainForm_Paint(object sender, PaintEventArgs e)
     {
-        if (gameManager.State.CurrentState == States.IsUpdating) return;
         gameManager.RenderGameObjects(e.Graphics);
     }
 

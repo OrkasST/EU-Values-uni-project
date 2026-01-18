@@ -16,6 +16,19 @@
         },
     
         {
+         "data":[0],
+         "height":1,
+         "id":6,
+         "name":"Tile Layer 2",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":1,
+         "x":0,
+         "y":0
+        },
+    
+        {
          "draworder":"topdown",
          "id":2,
          "name":"DoorWay",
@@ -61,9 +74,92 @@
          "visible":true,
          "x":0,
          "y":0
+        },
+    
+        {
+         "draworder":"topdown",
+         "id":4,
+         "name":"Ground",
+         "objects":[
+                {
+                 "height":104.276,
+                 "id":4,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":2501.22,
+                 "x":1.39034160454003,
+                 "y":1236.36419272282
+                },
+            
+                {
+                 "height":73.6881050406143,
+                 "id":7,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":353.146767553132,
+                 "x":905.112384555469,
+                 "y":960.726048737065
+                },
+            
+                {
+                 "height":84.8108378769333,
+                 "id":8,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":432.396239011906,
+                 "x":175.183042172026,
+                 "y":746.613441637922
+                },
+            
+                {
+                 "height":76.4687882496941,
+                 "id":9,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":312.826861021475,
+                 "x":1466.81039278959,
+                 "y":643.72816290197
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        },
+    
+        {
+         "draworder":"topdown",
+         "id":5,
+         "name":"PlayerSpawnPoint",
+         "objects":[
+                {
+                 "height":0,
+                 "id":5,
+                 "name":"",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1571.39034160454,
+                 "y":1172
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":4,
- "nextobjectid":4,
+ "nextlayerid":7,
+ "nextobjectid":10,
  "orientation":"orthogonal",
  "renderorder":"left-down",
  "tiledversion":"1.11.2",

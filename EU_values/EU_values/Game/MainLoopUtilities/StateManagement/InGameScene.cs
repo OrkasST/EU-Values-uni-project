@@ -10,15 +10,19 @@ namespace EU_values.Game.MainLoopUtilities.StateManagement;
 
 public abstract class InGameScene : Scene
 {
-    protected TiledMap? _data;
-    protected Action<int, int, int, int> SetCameraOffset;
+    protected TiledMap? _tiledMap { get; set; }
+    protected List<TiledLayer> _dataLayers { get; set; } = new();
+
+    protected Action<int, int, int, int> SetCameraOffset { get; set; }
 
     protected Player _player { get; set; }
-    protected GameUIText _playerData;
-    protected Box _playerInfoBg;
+    protected GameUIText _playerData { get; set; }
+    protected Box _playerInfoBg { get; set; }
 
-    protected List<Hitbox> DoorWays = [];
-    protected List<Hitbox> Doors = [];
+    protected List<Hitbox> DoorWays { get; set; } = [];
+    protected List<Hitbox> Doors { get; set; } = [];
+    protected List<Hitbox> Ground { get; set; } = [];
+    protected Point PlayerSpawnPoint { get; set; }
 
     protected bool IsSceneReady { get; private set; } = false;
     protected bool IsDataRead { get; private set; } = false;
@@ -29,6 +33,8 @@ public abstract class InGameScene : Scene
         ["Level_2"] = GameLevels.Level_2
     };
 
+    protected GameLevels PreviousLevel { get; private set; }
+
     public InGameScene(GameLevels previousLevel, Action<int, int, int, int> setCameraOffsset)
     {
         _player = new("Player", 1200, 1100);
@@ -36,24 +42,16 @@ public abstract class InGameScene : Scene
         _playerData = new("PlayerData", 450, 50, "PlayerData", "Times New Roman", 26, Color.White);
         _playerData.ToggleVisibility();
 
-        _playerInfoBg = new("PlayerInfoBg", 420, 20, 400, 350, Color.FromArgb(80, Color.Blue));
+        _playerInfoBg = new("PlayerInfoBg", 420, 20, 400, 380, Color.FromArgb(80, Color.Blue));
         _playerInfoBg.ToggleVisibility();
 
         SetCameraOffset = setCameraOffsset;
 
+        PreviousLevel = previousLevel;
+        PreviousLevel = previousLevel;
+
         RenderList.AddObject(-1, _playerInfoBg);
         RenderList.AddObject(-1, _playerData);
-    }
-
-    protected void MovePlayerToTheDoor(GameLevels previousLevel)
-    {
-        if (previousLevel != GameLevels.None)
-            foreach (var door in Doors) if (DoorDictionary[door.Id] == previousLevel)
-                {
-                    _player.SetPosition((door.X + door.Width / 2) - _player.Body.Size.Width / 2, _player.Body.Position.X);
-                    return;
-                }
-
     }
 
     protected void ReadData(string filePath)
@@ -62,33 +60,64 @@ public abstract class InGameScene : Scene
         if (!File.Exists(filePath)) return;
 
         var source = File.ReadAllText(filePath);
-        _data = JsonSerializer.Deserialize<TiledMap>(source);
+        _tiledMap = JsonSerializer.Deserialize<TiledMap>(source);
+
+        if (_tiledMap == null) return;
+
+        for (int i = 0; i < _tiledMap.Layers.Count; i++)
+            if (_tiledMap.Layers[i].Type == "objectgroup")
+                _dataLayers.Add(_tiledMap.Layers[i]);
 
         IsDataRead = true;
+
+        GetSceneHitboxes();
+        LocatePlayerInLevel();
     }
 
     protected void GetSceneHitboxes()
     {
         if (!IsDataRead) return;
-
-        for (int i = 0; i < _data?.Layers?.Count; i++)
-            if (_data.Layers?[i].Type == "objectgroup")
-                for (int j = 0; j < _data.Layers[i].Objects?.Count; j++)
-                    if (_data.Layers[i].Name == "Door") Doors.Add(CreateHitboxRectangle(_data.Layers[i].Objects?[j]));
-                    else if (_data.Layers[i].Name == "DoorWay") DoorWays.Add(CreateHitboxRectangle(_data.Layers[i].Objects?[j]));
+        foreach (var layer in _dataLayers)
+            for (int j = 0; j < layer.Objects?.Count; j++)
+                switch (layer.Name)
+                {
+                    case "Door": Doors.Add(Collider.CreateHitbox(layer.Objects[j])); break;
+                    case "DoorWay": DoorWays.Add(Collider.CreateHitbox(layer.Objects[j])); break;
+                    case "Ground": Ground.Add(Collider.CreateHitbox(layer.Objects[j])); AddHitboxGraphicalRepresentation(layer.Objects[j]); break;
+                    case "PlayerSpawnPoint": PlayerSpawnPoint = new Point((int)layer.Objects[j].X, (int)layer.Objects[j].Y); break;
+                    default: break;
+                }
     }
 
-    protected Hitbox CreateHitboxRectangle(TiledObject? obj)
+    private void AddHitboxGraphicalRepresentation(TiledObject obj)
     {
-        if (obj == null) return Hitbox.Empty;
-        return new Hitbox((int)obj.X, (int)obj.Y, (int)obj.Width, (int)obj.Height, obj.Name);
+        RenderList.AddObject(0, new Box(obj.Name, (int)obj.X, (int)obj.Y, (int)obj.Width, (int)obj.Height, Color.Black, true));
+        RenderList.AddObject(0, new Box(obj.Name, (int)obj.X + 1, (int)obj.Y + 1, (int)obj.Width - 2, (int)obj.Height - 2, Color.Yellow, true));
     }
+    protected void LocatePlayerInLevel()
+    {
+        int playerX = PlayerSpawnPoint.X;
+        int playerY = PlayerSpawnPoint.Y;
+
+        if (PreviousLevel != GameLevels.None)
+            foreach (var door in Doors) if (DoorDictionary[door.Id] == PreviousLevel)
+                {
+                    _player.SetPositionByCenter((door.X + door.Width / 2) - _player.Body.Size.Width / 2, playerY);
+                    return;
+                }
+
+        _player.SetPositionByCenter(playerX, playerY);
+    }
+
 
     public override void HandleUserInput()
     {
         base.HandleUserInput();
-        _player.HandleUserInput();
-        if ( !InputHandler.NoKeyboardEvents && InputHandler.LastKeyboardEvent.Key == Keys.Oem3
+        _player.HandleUserInput(InputHandler.LastKeyboardEvent);
+
+        if (InputHandler.NoKeyboardEvents) return;
+
+        if (InputHandler.LastKeyboardEvent.Key == Keys.Oem3
             && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp && !InputHandler.LastKeyboardEvent.IsHandled )
         {
             InputHandler.LastKeyboardEvent.IsHandled = true;
@@ -97,12 +126,12 @@ public abstract class InGameScene : Scene
         }
     }
 
-    public override void Update(int timeDelta, int timeRemaining)
+    public override void Update(float timeDelta, int timeRemaining, int timeDifference)
     {
-        base.Update(timeDelta, timeRemaining);
-        _player.Update(timeDelta, timeRemaining);
+        base.Update(timeDelta, timeRemaining, timeDifference);
+        _player.Update(timeDelta, timeRemaining, timeDifference);
 
-        var playerHitbox = new Rectangle(_player.Body.Position, _player.Body.Size);
+        var playerHitbox = new RectangleF(_player.Body.Position.X+46, _player.Body.Position.Y, 30, 128);
 
         if (Collider.DetectFullEnterCollision(playerHitbox, DoorWays)) _player.OnDoorWayEnter();
         else if (_player.IsInFrontOfDoor) _player.OnDoorWayLeave();
@@ -112,6 +141,9 @@ public abstract class InGameScene : Scene
             _nextState = States.InGameActive;
             _nextLevel = DoorDictionary[Collider.LastFullEnterCollisionId];
         }
+        if (_player.CurrentState == PlayerState.Falling && Collider.DetectPartialEnterCollision(playerHitbox, Ground)
+            && Collider.DetectGroundEnterCollision(playerHitbox, Collider.lastPartialEnteredHitbox)) _player.OnGroundHit();
+        else if (_player.CurrentState != PlayerState.Falling && !Collider.DetectPartialEnterCollision(playerHitbox, Ground)) _player.OnGroundLeave();
 
         if (_nextLevel != GameLevels.None) AwaitedLevel = _nextLevel;
 
@@ -124,6 +156,7 @@ public abstract class InGameScene : Scene
             $"\n - Player Position: {_player.Body.Position.X}, {_player.Body.Position.Y}" +
             $"\n - Player IsInFrontOfDoor: {_player.IsInFrontOfDoor}" +
             $"\n - Player is entering the door: {_player.IsEnteringTheDoor}" +
-            $"\n - Next Level: {_nextLevel}";
+            $"\n - Next Level: {_nextLevel}" +
+            $"\n - TimeDelta: {timeDelta}";
     }
 }

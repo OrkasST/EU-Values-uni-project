@@ -40,11 +40,58 @@
     
         {
          "draworder":"topdown",
+         "id":4,
+         "name":"Ground",
+         "objects":[
+                {
+                 "height":85.1162790697674,
+                 "id":3,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":1410.86680761099,
+                 "x":619,
+                 "y":1224
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        },
+    
+        {
+         "draworder":"topdown",
+         "id":5,
+         "name":"PlayerSpawnPoint",
+         "objects":[
+                {
+                 "height":0,
+                 "id":4,
+                 "name":"",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1321.60412262156,
+                 "y":1160
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        },
+    
+        {
+         "draworder":"topdown",
          "id":3,
          "name":"DoorWay",
          "objects":[
                 {
-                 "height":272.114,
+                 "height":302.114,
                  "id":1,
                  "name":"",
                  "rotation":0,
@@ -60,8 +107,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":4,
- "nextobjectid":3,
+ "nextlayerid":6,
+ "nextobjectid":5,
  "orientation":"orthogonal",
  "renderorder":"left-down",
  "tiledversion":"1.11.2",
