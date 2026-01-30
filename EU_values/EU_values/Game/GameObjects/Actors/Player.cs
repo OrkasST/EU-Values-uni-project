@@ -1,4 +1,6 @@
 ﻿using EU_values.Game.BaseClasses;
+using EU_values.Game.MainLoopUtilities.Physics;
+using EU_values.Game.UI.Elements;
 using EU_values.Utilities;
 using EU_values.Utilities.Events;
 
@@ -35,12 +37,16 @@ public class Player
     public PointF Speed { get; private set; }
 
     public AnimatedObject Body { get; private set; }
+    public Hitbox Hitbox { get; private set; }
     public Player(string name, float x, float y)
     {
-        Body = new AnimatedObject(name, x, y, 128, 128, Image.FromFile("..\\..\\..\\Resources\\Images\\PlayerSpritesheet\\PlayerSpriteSheet.png"), 4, 11);
+        Body = new (name, x, y, 128, 128, Image.FromFile("..\\..\\..\\Resources\\Images\\PlayerSpritesheet\\PlayerSpriteSheet.png"), 4, 11);
+        this.Hitbox = new Hitbox(Body.Position.X, Body.Position.Y, 46, 0, 34, 128, "PlayerHitbox");
+
         CurrentAnimation = AnimationType.LeftIdle;
         PreviousAnimation = AnimationType.LeftIdle;
-        Speed = new PointF(90, 50);
+
+        Speed = new (90, 50);
         JumpSpeed = 450;
 
         CurrentState = PlayerState.Standing;
@@ -88,9 +94,17 @@ public class Player
         Jump();
     }
 
-    public void SetPosition(PointF point) => this.Body.Position = point;
+    public void SetPosition(PointF point)
+    {
+        this.Body.Position = point;
+        this.Hitbox.Update(this.Body.Position.X, this.Body.Position.Y);
+    }
     public void SetPosition(float x, float y) => SetPosition(new PointF(x, y));
-    public void SetPositionByCenter(float x, float y) => SetPosition(new PointF(x - Body.Size.Width / 2, y - Body.Size.Height / 2));
+    public void SetPositionByCenter(float x, float y)
+    {
+        SetPosition(new PointF(x - Body.Size.Width / 2, y - Body.Size.Height / 2));
+        this.Hitbox.Set(Body.Position.X, Body.Position.Y);
+    }
 
     private void ChooseNextStateByEvent(GameKeyboardEvent e, PlayerState stateOnKeyUp, PlayerState stateOnKeyDown)
     {
@@ -132,7 +146,7 @@ public class Player
 
         if (_isInAir)
         {
-            Body.Position = new PointF(Body.Position.X + ((int)Direction * Speed.X * 1.5f * timeDelta), Body.Position.Y + ((IsJumping ? -1 : 1) * (_currentJumpSpeed*timeDelta)));
+            SetPosition(new PointF(Body.Position.X + ((int)Direction * Speed.X * 1.5f * timeDelta), Body.Position.Y + ((IsJumping ? -1 : 1) * (_currentJumpSpeed*timeDelta))));
             _currentJumpSpeed = _currentJumpSpeed + (IsJumping ? -1 : 1.3f) * 10f;
 
             if (CurrentState == PlayerState.Jumping && _currentJumpSpeed == 0)
@@ -172,6 +186,11 @@ public class Player
     {
         ChangeState(PlayerState.Falling);
         _isInAir = true;
+    }
+
+    public void OnLevelBorderHit()
+    {
+        ChangeState(PlayerState.Standing);
     }
 
     private void AdjustAnimationToState()

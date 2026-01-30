@@ -8,12 +8,22 @@ public class GameUIText : DrawableObject
     public Font Font { get; private set; }
     public Color TextColor { get; private set; }
 
+    public GameUIText(string name, float x, float y, string text, string fontFamily, int fontSize, bool? isCameraAffected = false) : base(name, x, y, isCameraAffected)
+    {
+        Text = text;
+        Font = new Font(fontFamily, fontSize, GraphicsUnit.Pixel);
+        TextColor = Color.White;
+    }
     public GameUIText(string name, int x, int y, string text, string fontFamily, int fontSize, bool? isCameraAffected = false) : base(name, x, y, isCameraAffected) {
         Text = text;
         Font = new Font(fontFamily, fontSize, GraphicsUnit.Pixel);
         TextColor = Color.White;
     }
     public GameUIText(string name, int x, int y, string text, string fontFamily, int fontSize, Color color, bool? isCameraAffected = false) : this(name, x, y, text, fontFamily, fontSize, isCameraAffected)
+    {
+        TextColor = color;
+    }
+    public GameUIText(string name, float x, float y, string text, string fontFamily, int fontSize, Color color, bool? isCameraAffected = false) : this(name, x, y, text, fontFamily, fontSize, isCameraAffected)
     {
         TextColor = color;
     }

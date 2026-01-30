@@ -54,6 +54,10 @@ public abstract class DrawableObject
     {
         BackgroundColor = color;
     }
+    public DrawableObject(string name, float x, float y, float width, float height, Color color, bool? isCameraAffected = false) : this(name, x, y, width, height, isCameraAffected)
+    {
+        BackgroundColor = color;
+    }
 
     public abstract void Update(float timeDelta, int timeRemaining, int timeDifference);
 

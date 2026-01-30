@@ -89,44 +89,79 @@
                  "type":"",
                  "visible":true,
                  "width":2501.22,
-                 "x":1.39034160454003,
-                 "y":1236.36419272282
+                 "x":1.39034,
+                 "y":1236.36
                 },
             
                 {
-                 "height":73.6881050406143,
+                 "height":73.6881,
                  "id":7,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":353.146767553132,
-                 "x":905.112384555469,
-                 "y":960.726048737065
+                 "width":353.147,
+                 "x":905.112,
+                 "y":960.726
                 },
             
                 {
-                 "height":84.8108378769333,
+                 "height":84.8108,
                  "id":8,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":432.396239011906,
-                 "x":175.183042172026,
-                 "y":746.613441637922
+                 "width":432.396,
+                 "x":175.183,
+                 "y":746.613
                 },
             
                 {
-                 "height":76.4687882496941,
+                 "height":76.4688,
                  "id":9,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":312.826861021475,
-                 "x":1466.81039278959,
-                 "y":643.72816290197
+                 "width":312.827,
+                 "x":1466.81,
+                 "y":643.728
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        },
+    
+        {
+         "draworder":"topdown",
+         "id":7,
+         "name":"LevelBorders",
+         "objects":[
+                {
+                 "height":1375.05,
+                 "id":10,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":20.8551,
+                 "x":-8.34632580393918,
+                 "y":1.39035260932458
+                },
+            
+                {
+                 "height":1375.05,
+                 "id":12,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":20.8551,
+                 "x":2488.01897518638,
+                 "y":4.86512320907983
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -149,7 +184,7 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1571.39034160454,
+                 "x":1571.39,
                  "y":1172
                 }],
          "opacity":1,
@@ -158,8 +193,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":7,
- "nextobjectid":10,
+ "nextlayerid":9,
+ "nextobjectid":13,
  "orientation":"orthogonal",
  "renderorder":"left-down",
  "tiledversion":"1.11.2",

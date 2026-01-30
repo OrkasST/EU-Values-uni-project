@@ -67,7 +67,11 @@ public class Renderer
         var brush = new SolidBrush(obj.BackgroundColor);
         var destRect = new RectangleF(obj.IsCameraAffected ? obj.Position + _cameraOffset : obj.Position, obj.Size);
 
-        if(!obj.HasImage) g.FillRectangle(brush, destRect);
+        if (!obj.HasImage)
+        {
+            if (obj.IsFilled) g.FillRectangle(brush, destRect);
+            else g.DrawRectangle(new Pen(obj.BackgroundColor, 1.0f), destRect);
+        }
         else g.DrawImage(obj.BackgroundImage, destRect);
     }
     private void RenderDrawable(Graphics g, AnimatedObject obj)
