@@ -1,59 +1,41 @@
-﻿using EU_values.Game.BaseClasses;
-using EU_values.Game.MainLoopUtilities.Physics;
-using EU_values.Game.UI.Elements;
-using EU_values.Utilities;
+﻿using EU_values.Utilities;
 using EU_values.Utilities.Events;
 
 namespace EU_values.Game.GameObjects.Actors;
 
-public enum AnimationType { LeftIdle, RightIdle, LeftWalk, RightWalk, BackWalk, LeftJump, RightJump, LeftFalling, RightFalling, LeftLanding, RightLanding }
-enum AnimationDirection { Left = -1, Right = 1, Back }
-
-public enum PlayerState { Standing, Moving, Jumping, Falling, Landing }
-public enum LookDirection { Left=-1, Right=1, Back=0 }
-
-public class Player
+public class Player : Actor
 {
-    public AnimationType CurrentAnimation { get; private set; }
-    public AnimationType PreviousAnimation { get; private set; }
+    private readonly static string _framesetPath = "..\\..\\..\\Resources\\Images\\PlayerSpritesheet\\PlayerSpriteSheet_02.png";
 
-    public bool _isInAir = false;
-    public bool IsInFrontOfDoor { get; private set; } = false;
-    private bool _isOnTheDoorWay = false;
-    public bool IsEnteringTheDoor { get; private set; } = false;
+    public bool IsGoingThrough { get;  set; }
 
-    public bool IsJumping { get; private set; } = false;
-
-    public PlayerState CurrentState { get; private set; }
-    public PlayerState PreviousState { get; private set; }
-    public LookDirection Direction { get; private set; }
-    public LookDirection PreviousDirection { get; private set; }
-
-    public float JumpSpeed { get; private set; }
-    private float _currentJumpSpeed;
-
-    private bool _isStateChanged;
-
-    public PointF Speed { get; private set; }
-
-    public AnimatedObject Body { get; private set; }
-    public Hitbox Hitbox { get; private set; }
-    public Player(string name, float x, float y)
+    public Player(string name, float x, float y) : base(name, x, y,
+        frameset: new(name, x, y, width: 128, height: 128, frameset: Image.FromFile(_framesetPath), xFramesNumber: 4, yFramesNumber: 13, isCameraAffected: true),
+        speed: new PointF(90, 50),
+        jumpSpeed: 650,
+        hitboxOffsetX: 46, hitboxOffsetY: 0, hitboxWidth: 34, hitboxHeight: 128)
     {
-        Body = new (name, x, y, 128, 128, Image.FromFile("..\\..\\..\\Resources\\Images\\PlayerSpritesheet\\PlayerSpriteSheet.png"), 4, 11);
-        this.Hitbox = new Hitbox(Body.Position.X, Body.Position.Y, 46, 0, 34, 128, "PlayerHitbox");
+        AnimationParameters = new()
+        {
+            [AnimationType.LeftIdle] =      new(frameTimeGap: 100, startXFrame: 0, startYFrame: 0,  endXFrame: 3, endYFrame: 0, isInfinite: true),
+            [AnimationType.RightIdle] =     new(frameTimeGap: 100, startXFrame: 0, startYFrame: 1,  endXFrame: 3, endYFrame: 1, isInfinite: true),
 
-        CurrentAnimation = AnimationType.LeftIdle;
-        PreviousAnimation = AnimationType.LeftIdle;
+            [AnimationType.LeftWalk] =      new(frameTimeGap: 100, startXFrame: 0, startYFrame: 2,  endXFrame: 3, endYFrame: 2, isInfinite: true),
+            [AnimationType.RightWalk] =     new(frameTimeGap: 100, startXFrame: 0, startYFrame: 3,  endXFrame: 3, endYFrame: 3, isInfinite: true),
+            [AnimationType.BackWalk] =      new(frameTimeGap: 100, startXFrame: 0, startYFrame: 4,  endXFrame: 3, endYFrame: 4, isInfinite: true),
 
-        Speed = new (90, 50);
-        JumpSpeed = 450;
+            [AnimationType.LeftJump] =      new(frameTimeGap: 100, startXFrame: 0, startYFrame: 5,  endXFrame: 2, endYFrame: 5, isInfinite: true),
+            [AnimationType.RightJump] =     new(frameTimeGap: 100, startXFrame: 0, startYFrame: 6,  endXFrame: 2, endYFrame: 6, isInfinite: true),
 
-        CurrentState = PlayerState.Standing;
-        PreviousState = PlayerState.Standing;
+            [AnimationType.LeftFalling] =   new(frameTimeGap: 100, startXFrame: 0, startYFrame: 7,  endXFrame: 1, endYFrame: 7, isInfinite: true),
+            [AnimationType.RightFalling] =  new(frameTimeGap: 100, startXFrame: 0, startYFrame: 8,  endXFrame: 1, endYFrame: 8, isInfinite: true),
 
-        Direction = LookDirection.Left;
-        PreviousDirection = LookDirection.Left;
+            [AnimationType.LeftLanding] =   new(frameTimeGap: 100, startXFrame: 0, startYFrame: 9,  endXFrame: 1, endYFrame: 9, isInfinite: true),
+            [AnimationType.RightLanding] =  new(frameTimeGap: 100, startXFrame: 0, startYFrame: 10, endXFrame: 1, endYFrame: 10, isInfinite: true),
+
+            [AnimationType.LeftLadderClimbing] =  new(frameTimeGap: 100, startXFrame: 0, startYFrame: 11, endXFrame: 3, endYFrame: 11, isInfinite: true),
+            [AnimationType.RightLadderClimbing] =  new(frameTimeGap: 100, startXFrame: 0, startYFrame: 12, endXFrame: 3, endYFrame: 12, isInfinite: true)
+        };
     }
 
     public void HandleUserInput(GameKeyboardEvent e)
@@ -64,170 +46,67 @@ public class Player
 
         switch (e.Key)
         {
-            case Keys.D: ChooseNextStateByEvent(e, PlayerState.Standing, PlayerState.Moving);
-                         ChangeLookDirection(LookDirection.Right); break;
+            case Keys.D:
+                ChooseNextStateByEvent(e, ActorState.Standing, ActorState.Moving);
+                ChangeLookDirection(LookDirection.Right); break;
 
-            case Keys.A: ChooseNextStateByEvent(e, PlayerState.Standing, PlayerState.Moving);
-                         ChangeLookDirection(LookDirection.Left); break;
+            case Keys.A:
+                ChooseNextStateByEvent(e, ActorState.Standing, ActorState.Moving);
+                ChangeLookDirection(LookDirection.Left); break;
 
             case Keys.W: HandleFrontMovementButton(e); break;
 
             case Keys.Space: HandleJumpButton(e); break;
 
+            case Keys.S: HandleGoThroughButton(e); break;
+
+            case Keys.F: HandleClimb(e); break;
+
             default: break;
         }
+    }
+
+    private void HandleClimb(GameKeyboardEvent e)
+    {
+        e.IsHandled = true;
+        ChooseNextStateByEvent(e, PreviousState, ActorState.LadderClimbing);
     }
 
     private void HandleFrontMovementButton(GameKeyboardEvent e)
     {
-        ChooseNextStateByEvent(e, PreviousState, PlayerState.Moving);
+        e.IsHandled = true;
+        ChooseNextStateByEvent(e, PreviousState, ActorState.Moving);
         if (e.EventType == GameUserEventType.KeyDown) ChangeLookDirection(LookDirection.Back);
-        else ChangeLookDirection(PreviousDirection);
+        else if (Direction == LookDirection.Back) ChangeLookDirection(PreviousDirection);
     }
     private void HandleJumpButton(GameKeyboardEvent e)
     {
         e.IsHandled = true;
+
         if (e.EventType == GameUserEventType.KeyDown) return;
-        ChangeState(PlayerState.Jumping);
-        if (Direction == LookDirection.Back) ChangeLookDirection(PreviousDirection);
-        _isInAir = true;
+        ChangeState(ActorState.Jumping);
         Jump();
     }
-
-    public void SetPosition(PointF point)
-    {
-        this.Body.Position = point;
-        this.Hitbox.Update(this.Body.Position.X, this.Body.Position.Y);
-    }
-    public void SetPosition(float x, float y) => SetPosition(new PointF(x, y));
-    public void SetPositionByCenter(float x, float y)
-    {
-        SetPosition(new PointF(x - Body.Size.Width / 2, y - Body.Size.Height / 2));
-        this.Hitbox.Set(Body.Position.X, Body.Position.Y);
-    }
-
-    private void ChooseNextStateByEvent(GameKeyboardEvent e, PlayerState stateOnKeyUp, PlayerState stateOnKeyDown)
+    private void ChooseNextStateByEvent(GameKeyboardEvent e, ActorState stateOnKeyUp, ActorState stateOnKeyDown)
     {
         e.IsHandled = true;
+
         ChangeState(e.EventType == GameUserEventType.KeyUp ? stateOnKeyUp : stateOnKeyDown);
     }
-
-    private void ChangeState(PlayerState nextState)
+    private void HandleGoThroughButton(GameKeyboardEvent e)
     {
-        PreviousState = CurrentState;
-        CurrentState = nextState;
-        _isStateChanged = true;
-    }
-    private void ChangeLookDirection(LookDirection direction)
-    {
-        PreviousDirection = Direction;
-        Direction = direction;
-    }
-    private void ChangeAnimationType(AnimationType nextAnimation)
-    {
-        PreviousAnimation = CurrentAnimation;
-        CurrentAnimation = nextAnimation;
+        e.IsHandled = true;
+        IsGoingThrough = true;
+        ChooseNextStateByEvent(e, CurrentState, ActorState.Falling);
     }
 
-    public void Update(float timeDelta, int timeRemaining, int timeDifference)
+    public override void Update(float timeDelta, int timeRemaining, int timeDifference)
     {
-        if (_isStateChanged)
-        {
-            Body.StopAnimation();
-            AdjustAnimationToState();
-            _isStateChanged = false;
-        }
-
-        if (!Body.IsAnimationStarted)
-        {
-            Body.StartAnimation(100, 0, 1 * (int)CurrentAnimation, (int)CurrentAnimation <= 4 ? 3 : (int)CurrentAnimation <= 6 ? 2 : 1, (int)CurrentAnimation,
-                !_isInAir, timeRemaining);
-        }
-
-        if (_isInAir)
-        {
-            SetPosition(new PointF(Body.Position.X + ((int)Direction * Speed.X * 1.5f * timeDelta), Body.Position.Y + ((IsJumping ? -1 : 1) * (_currentJumpSpeed*timeDelta))));
-            _currentJumpSpeed = _currentJumpSpeed + (IsJumping ? -1 : 1.3f) * 10f;
-
-            if (CurrentState == PlayerState.Jumping && _currentJumpSpeed == 0)
-            {
-                IsJumping = false;
-                ChangeState(PlayerState.Falling);
-            }
-
-        } else
-        {
-            if (CurrentState == PlayerState.Moving)
-            {
-                var speed = Speed.X * timeDelta;
-                var speedDir = (int)Direction * Speed.X * timeDelta;
-
-                SetPosition(new PointF( ((int)Direction * Speed.X * timeDelta) + Body.Position.X, Body.Position.Y));
-            }
-            if (IsInFrontOfDoor && Direction == LookDirection.Back)
-            {
-                _isOnTheDoorWay = true;
-                SetPosition(new PointF(Body.Position.X, Body.Position.Y - (Speed.Y * timeDelta) ));
-            }
-        }
-
-        if (Body.CurrentFrame >= Body.CurrentLastFrame)
-        {
-            if (CurrentState == PlayerState.Landing) ChangeState(PlayerState.Standing);
-        }
+        base.Update(timeDelta, timeRemaining, timeDifference);
     }
 
-    public void OnGroundHit()
+    internal void SetJumpSpeed(float speed)
     {
-        ChangeState(PlayerState.Landing);
-        _isInAir = false;
+        JumpSpeed = speed;
     }
-    public void OnGroundLeave()
-    {
-        ChangeState(PlayerState.Falling);
-        _isInAir = true;
-    }
-
-    public void OnLevelBorderHit()
-    {
-        ChangeState(PlayerState.Standing);
-    }
-
-    private void AdjustAnimationToState()
-    {
-        switch (CurrentState)
-        {
-            case PlayerState.Standing: if (Direction == LookDirection.Left) ChangeAnimationType(AnimationType.LeftIdle);
-                else ChangeAnimationType(AnimationType.RightIdle); break;
-
-            case PlayerState.Moving:
-                if (Direction == LookDirection.Left) ChangeAnimationType(AnimationType.LeftWalk);
-                else if (Direction == LookDirection.Back) ChangeAnimationType(AnimationType.BackWalk);
-                else ChangeAnimationType(AnimationType.RightWalk); break;
-
-            case PlayerState.Jumping:
-                if (Direction == LookDirection.Left) ChangeAnimationType(AnimationType.LeftJump);
-                else ChangeAnimationType(AnimationType.RightJump); break;
-
-            case PlayerState.Falling:
-                if (Direction == LookDirection.Left) ChangeAnimationType(AnimationType.LeftFalling);
-                else ChangeAnimationType(AnimationType.RightFalling); break;
-
-            case PlayerState.Landing:
-                if (Direction == LookDirection.Left) ChangeAnimationType(AnimationType.LeftLanding);
-                else ChangeAnimationType(AnimationType.RightLanding); break;
-
-            default: break;
-        }
-    }
-
-    public void Jump()
-    {
-        IsJumping = true;
-        _currentJumpSpeed = JumpSpeed;
-    }
-
-    public void OnDoorWayEnter() => IsInFrontOfDoor = true;
-    public void OnDoorWayLeave() => IsInFrontOfDoor = false;
-    public void OnDoorEnterStart() => IsEnteringTheDoor = true;
 }

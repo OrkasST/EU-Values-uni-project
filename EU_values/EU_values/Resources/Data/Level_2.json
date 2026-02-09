@@ -27,9 +27,102 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":887.273,
-                 "x":928.541,
-                 "y":1009.79
+                 "width":132,
+                 "x":806.333333333333,
+                 "y":1015
+                },
+            
+                {
+                 "height":144.44,
+                 "id":6,
+                 "name":"Level_3",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":132,
+                 "x":1825.19333333333,
+                 "y":1015
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":false,
+         "x":0,
+         "y":0
+        },
+    
+        {
+         "draworder":"topdown",
+         "id":6,
+         "name":"LevelBorders",
+         "objects":[
+                {
+                 "height":1317,
+                 "id":7,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":13,
+                 "x":608,
+                 "y":-8
+                },
+            
+                {
+                 "height":1306.67,
+                 "id":8,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":2025.33,
+                 "y":-5.33333
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        },
+    
+        {
+         "draworder":"topdown",
+         "id":7,
+         "name":"WordWindow",
+         "objects":[
+                {
+                 "height":400,
+                 "id":10,
+                 "name":"Word Window",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":300,
+                 "x":1208.83,
+                 "y":827.5
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        },
+    
+        {
+         "draworder":"topdown",
+         "id":8,
+         "name":"Compass",
+         "objects":[
+                {
+                 "height":192,
+                 "id":12,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":192,
+                 "x":1265,
+                 "y":420
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -44,13 +137,13 @@
          "name":"Ground",
          "objects":[
                 {
-                 "height":85.1162790697674,
+                 "height":85.1163,
                  "id":3,
                  "name":"",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":1410.86680761099,
+                 "width":1410.87,
                  "x":619,
                  "y":1224
                 }],
@@ -75,7 +168,7 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1321.60412262156,
+                 "x":1321.6,
                  "y":1160
                 }],
          "opacity":1,
@@ -97,9 +190,21 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":914.355,
-                 "x":916.934,
-                 "y":999.471
+                 "width":130,
+                 "x":807.393333333333,
+                 "y":1007
+                },
+            
+                {
+                 "height":302.114,
+                 "id":5,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":130,
+                 "x":1826.01333333333,
+                 "y":1007.58
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -107,8 +212,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":6,
- "nextobjectid":5,
+ "nextlayerid":9,
+ "nextobjectid":13,
  "orientation":"orthogonal",
  "renderorder":"left-down",
  "tiledversion":"1.11.2",

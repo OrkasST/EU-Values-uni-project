@@ -6,28 +6,78 @@ namespace EU_values.Game.MainLoopUtilities.StateManagement.Scenes;
 
 public class MainMenuScene : Scene
 {
-    private GameUIText label1;
-    private GameUIButton button1;
-    private GameUIText MouseCoordinates;
+    private GameUIText _gameName;
+    private GameUIButton _startGameButton;
+    private GameUIButton _quiteGameButton;
+    private GameUIButton _goToSettingsButton;
 
     private Dictionary<string, Action> _actionList;
+    private SettingsScene _settingsSubScene;
 
-    public MainMenuScene()
+    //private GameUIText _mousecoordin;
+
+    private RenderLayerList _listBackup;
+    private bool _isInSettingsSubScene = false;
+    private bool _isGoToSettingsClicked = false;
+    private bool _backToMainMenuClicked = false;
+
+    public MainMenuScene(GameLevels nextLevel)
     {
-        label1 = new GameUIText("MainMenu_Label1", 10, 10, "Hello My Game", "Times New Roman", 26);
-        button1 = new GameUIButton("MainMenu_button1", 10, 80, "Button 1");
-        MouseCoordinates = new GameUIText("MainMenu_MouseCoordinates", 10, 160, "X:0 Y:0", "Times New Roman", 20);
+        _gameName = new GameUIText("MainMenu_GameName",
+            x: 0, y: -200,
+            text: "EU Values", fontFamily: "Times New Roman", fontSize: 46);
+        _gameName.ChangeTextAlignment(TextPositioning.Center);
+        _gameName.StickToWindowPart(WindowPart.Center);
 
-        RenderList.AddObject(0, label1);
-        RenderList.AddObject(0, button1);
-        RenderList.AddObject(0, MouseCoordinates);
+        //_mousecoordin = new GameUIText("MainMenu_GameName",
+        //    x: 10, y: 200,
+        //    text: "Coordinates", fontFamily: "Times New Roman", fontSize: 26);
+
+        _startGameButton = new("MainMenu_startGameButton",
+            x: -150, y: -100, width: 300, height: 46,
+            text: "Start Game", textX: 150, textY: 10, textSize: 26);
+        _startGameButton.ChangeTextAlignment(TextPositioning.Center);
+        _startGameButton.StickToWindowPart(WindowPart.Center);
+
+        _goToSettingsButton = new("MainMenu_goToSettingsButton",
+            x: -150, y: -35, width: 300, height: 46,
+            text: "Settings", textX: 150, textY: 10, textSize: 26);
+        _goToSettingsButton.ChangeTextAlignment(TextPositioning.Center);
+        _goToSettingsButton.StickToWindowPart(WindowPart.Center);
+
+        _quiteGameButton = new("MainMenu_quiteGameButton",
+            x: -150, y: 30, width: 300, height: 46,
+            text: "Quite Game", textX: 150, textY: 10, textSize: 26);
+        _quiteGameButton.ChangeTextAlignment(TextPositioning.Center);
+        _quiteGameButton.StickToWindowPart(WindowPart.Center);
+
+        RenderList.AddObject(0, _gameName);
+        RenderList.AddObject(0, _startGameButton);
+        RenderList.AddObject(0, _goToSettingsButton);
+        RenderList.AddObject(0, _quiteGameButton);
+        //RenderList.AddObject(0, _mousecoordin);
+
+        _listBackup = RenderList;
+
+        _settingsSubScene = new(() =>
+        {
+            _backToMainMenuClicked = true;
+        });
 
         _actionList = new Dictionary<string, Action>
         {
-            [button1.Name] = () =>
+            [_startGameButton.Name] = () =>
             {
                 _nextState = States.InGameActive;
-                _nextLevel = GameLevels.Level_1;
+                _nextLevel = nextLevel;
+            },
+            [_quiteGameButton.Name] = () =>
+            {
+                ActionInjector.RequestAction(ActionType.QuiteGame)();
+            },
+            [_goToSettingsButton.Name] = () =>
+            {
+                _isGoToSettingsClicked = true;
             }
         };
     }
@@ -37,7 +87,7 @@ public class MainMenuScene : Scene
         if (!InputHandler.NoMouseEvents)
         {
             var coordinates = InputHandler.LastMouseEvent.Location;
-            MouseCoordinates.Text = $"X: {coordinates.X} | Y: {coordinates.Y}";
+            //_mousecoordin.Text = $"X: {coordinates.X}\nY: {coordinates.Y}";
 
             foreach (var layer in RenderList.Layers())
                 foreach (var obj in layer)
@@ -46,15 +96,15 @@ public class MainMenuScene : Scene
 
                     var iObj = (IInteractive)obj;
 
-                    MouseCoordinates.Text += $"\nO.X: {obj.Position.X} | O.Y: {obj.Position.Y}";
-                    MouseCoordinates.Text += $"\nO.X2: {obj.Position.X + obj.Size.Width} | O.Y2: {obj.Position.Y + obj.Size.Height}";
+                    //_mousecoordin.Text += $"\nobj.X: {obj.Position.X}\nobj.Y: {obj.Position.Y}\n";
 
                     if (obj.Position.X <= coordinates.X && obj.Position.Y <= coordinates.Y
                         && obj.Position.X + obj.Size.Width >= coordinates.X && obj.Position.Y + obj.Size.Height >= coordinates.Y)
                     {
                         iObj.OnMouseEnter();
                         if (InputHandler.LastMouseEvent.IsLeftPressed) iObj.OnMouseDown();
-                        else if (!InputHandler.LastMouseEvent.IsRightPressed) iObj.OnMouseUp(_actionList[obj.Name]);
+                        else if (!InputHandler.LastMouseEvent.IsRightPressed) iObj.OnMouseUp(
+                            _isInSettingsSubScene ? _settingsSubScene.ActionList[obj.Name] : _actionList[obj.Name] );
                     }
                     else if (iObj.HasMouseOver) iObj.OnMouseLeave();
                 }
@@ -64,6 +114,19 @@ public class MainMenuScene : Scene
     public override void Update(float timeDelta, int timeRemaining, int timeDifference)
     {
         base.Update(timeDelta, timeRemaining, timeDifference);
+
+        if (_isGoToSettingsClicked && !_isInSettingsSubScene)
+        {
+            RenderList = _settingsSubScene.RenderList;
+            _isInSettingsSubScene = true;
+            _isGoToSettingsClicked = false;
+        }
+        if (_backToMainMenuClicked && _isInSettingsSubScene)
+        {
+            RenderList = _listBackup;
+            _isInSettingsSubScene = false;
+            _backToMainMenuClicked = false;
+        }
 
         if (_nextLevel != GameLevels.None) AwaitedLevel = _nextLevel;
     }

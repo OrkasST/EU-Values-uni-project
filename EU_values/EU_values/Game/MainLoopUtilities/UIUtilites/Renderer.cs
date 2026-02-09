@@ -7,7 +7,7 @@ namespace EU_values.Game.MainLoopUtilities.UIUtilities;
 public class Renderer
 {
     public Color ClearColor { get; private set; } = Color.Black;
-    private Size _cameraOffset = Size.Empty;
+    private SizeF _cameraOffset = SizeF.Empty;
 
     public Renderer(Color clearColor)
     {
@@ -19,7 +19,9 @@ public class Renderer
         g.Clear(ClearColor);
     }
 
-    public void Render(Graphics g, RenderLayerList list) {
+    public void Render(Graphics g, RenderLayerList list, SizeF cameraOffset) {
+        _cameraOffset = cameraOffset;
+
         var layers = list.Layers();
         for (int layer = 0; layer < layers.Count; layer++)
         {
@@ -53,14 +55,14 @@ public class Renderer
             }
 
             ComplexDrawableObject complexObj = (ComplexDrawableObject)obj;
-            Render(g, complexObj.RenderList);
+            Render(g, complexObj.RenderList, _cameraOffset);
         }
     }
 
     private void RenderDrawable(Graphics g, GameUIText obj)
     {
-        if (obj.IsCameraAffected) g.DrawString(obj.Text, obj.Font, new SolidBrush(obj.TextColor), obj.Position+_cameraOffset);
-        else g.DrawString(obj.Text, obj.Font, new SolidBrush(obj.TextColor), obj.Position);
+        if (obj.IsCameraAffected) g.DrawString(obj.Text, obj.Font, new SolidBrush(obj.TextColor), obj.Position+_cameraOffset, obj.Format);
+        else g.DrawString(obj.Text, obj.Font, new SolidBrush(obj.TextColor), obj.Position, obj.Format);
     }
     private void RenderDrawable(Graphics g, Box obj)
     {
@@ -72,7 +74,18 @@ public class Renderer
             if (obj.IsFilled) g.FillRectangle(brush, destRect);
             else g.DrawRectangle(new Pen(obj.BackgroundColor, 1.0f), destRect);
         }
-        else g.DrawImage(obj.BackgroundImage, destRect);
+        else if (obj.IsRotatable)
+        {
+            var renderPoints = new PointF[obj.RenderPoints.Length];
+            if (obj.IsCameraAffected) for (int i = 0; i < renderPoints.Length; i++)
+                    renderPoints[i] = new(obj.RenderPoints[i].X + _cameraOffset.Width, obj.RenderPoints[i].Y + _cameraOffset.Height);
+
+            g.DrawImage(obj.BackgroundImage, obj.IsCameraAffected ? renderPoints : obj.RenderPoints);
+        }
+        else
+        {
+            g.DrawImage(obj.BackgroundImage, destRect);
+        }
     }
     private void RenderDrawable(Graphics g, AnimatedObject obj)
     {

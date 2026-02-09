@@ -49,4 +49,15 @@ public class RenderLayerList
         if (layer >= 0) _bottomLayers[layer][index] = newObj;
         else _topLayers[(-layer) - 1][index] = newObj;
     }
+
+    public void RemoveObject(int layer, int index)
+    {
+        if (layer >= 0) _bottomLayers[layer].RemoveAt(index);
+        else _topLayers[(-layer) - 1].RemoveAt(index);
+    }
+
+    public void RemoveObjectRange(int layer, int index, int count)
+    {
+        for (int i = 0; i < count; i++) RemoveObject(layer, index);
+    }
 }

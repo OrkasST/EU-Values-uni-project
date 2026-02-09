@@ -1,5 +1,4 @@
 using EU_values.Game;
-using EU_values.Game.MainLoopUtilities.StateManagement;
 using EU_values.Utilities;
 using EU_values.Utilities.Events;
 
@@ -7,15 +6,10 @@ namespace EU_values;
 
 public partial class MainForm : Form
 {
-    private Utilities.FullScreen fullScreen = new Utilities.FullScreen();
     private GameManager gameManager = new GameManager();
     public MainForm()
     {
         InitializeComponent();
-
-        //gameManager.Initialize(this);
-        //fullScreen.EnterFullScreenMode(this);
-
     }
 
     private void LoopTimer_Tick(object sender, EventArgs e)

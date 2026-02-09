@@ -1,17 +1,9 @@
-﻿using EU_values.Game.MainLoopUtilities.UIUtilities;
-using System.Drawing;
+﻿using EU_values.Game.MainLoopUtilities.StateManagement.Scenes.SceneDataUtils;
 
 namespace EU_values.Game.BaseClasses;
 
 public class AnimatedObject : ComplexDrawableObject
 {
-    //var rectLocation = new Point(x, y);
-    //var rectSize = new Size(size, size);
-    //var destRect = new Rectangle(rectLocation, rectSize);
-
-    //var srcRect = new Rectangle(0, 32, 32, 32);
-
-    //g.DrawImage(PlayerImage, destRect, srcRect, GraphicsUnit.Pixel);
     public int CurrentFrame { get; private set; }
 
     public int CurrentXFrame {  get; private set; }
@@ -63,21 +55,21 @@ public class AnimatedObject : ComplexDrawableObject
         CurrentFrame = CurrentYFrame*XFramesNumber + CurrentXFrame;
     }
 
-    public void StartAnimation(int frameTimeGap, int startXFrame, int startYFrame, int endXFrame, int endYFrame, bool isInfinite, int startTime)
+    public void StartAnimation(AnimationParametersContainer parameters, int startTime)
     {
-        _stepDuration = frameTimeGap;
+        _stepDuration = parameters.FrameTimeGap;
 
-        _startingXFrame = startXFrame;
-        _startingYFrame = startYFrame;
-        _endingXFrame = endXFrame;
-        _endingYFrame = endYFrame;
+        _startingXFrame = parameters.StartXFrame;
+        _startingYFrame = parameters.StartYFrame;
+        _endingXFrame = parameters.EndXFrame;
+        _endingYFrame = parameters.EndYFrame;
 
         CurrentLastFrame = GetFrame(_endingXFrame, _endingYFrame);
 
-        IsAnimationInfinite = isInfinite;
+        IsAnimationInfinite = parameters.IsInfinite;
         
         _stepStartTime = startTime;
-        SetFrame(startXFrame, startYFrame);
+        SetFrame(_startingXFrame, _startingYFrame);
 
         AnimationDuration = (CurrentLastFrame - CurrentFrame) * _stepDuration;
         IsAnimationStarted = true;

@@ -48,4 +48,9 @@ public static class InputHandler
         }
         NoMouseEvents = false;
     }
+
+    public static bool IsKeyAChar(Keys key)
+    {
+        return key >= Keys.A && key <= Keys.Z;
+    }
 }

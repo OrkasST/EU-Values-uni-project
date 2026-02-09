@@ -14,6 +14,8 @@ public class Hitbox
     public float ModifierX { get; private set; }
     public float ModifierY { get; private set; }
 
+    public bool IsCollidable { get; set; } = true;
+
     public Hitbox(float x, float y, float width, float height, string id)
     {
         X = x; Y = y; Width = width; Height = height; Id = id;

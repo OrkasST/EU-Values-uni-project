@@ -1,8 +1,12 @@
-﻿namespace EU_values.Game.MainLoopUtilities.StateManagement;
+﻿using EU_values.Game.MainLoopUtilities.UIUtilities;
+
+namespace EU_values.Game.MainLoopUtilities.StateManagement;
 
 public abstract class Scene
 {
     public RenderLayerList RenderList { get; protected set; } = new RenderLayerList();
+    public bool IsRenderListChanged = false;
+    public Camera GameCamera = new();
 
     public States AwaitedGameState { get; protected set; } = States.None;
     protected States _nextState { get; set; } = States.None;

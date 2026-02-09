@@ -1,6 +1,5 @@
 ﻿using EU_values.Game.GameObjects.Actors;
 using EU_values.Game.MainLoopUtilities.StateManagement.Scenes.SceneDataUtils;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace EU_values.Game.MainLoopUtilities.Physics;
 
@@ -24,20 +23,56 @@ public static class Collider
         return new Hitbox((int)obj.X, (int)obj.Y, (int)obj.Width, (int)obj.Height, obj.Name);
     }
 
+
+    public static bool DetectFullEnterCollision(PointF movable, Hitbox hitbox)
+    {
+        if (!hitbox.IsCollidable) return false;
+
+        if (movable.X <= hitbox.X + hitbox.Width && movable.X >= hitbox.X
+            && movable.Y <= hitbox.Y + hitbox.Height && movable.Y >= hitbox.Y)
+        {
+            LastFullEnterCollisionId = hitbox.Id;
+            return true;
+        }
+
+        return false;
+    }
+    public static bool DetectFullEnterCollision(Hitbox movable, Hitbox hitbox)
+    {
+        if (!movable.IsCollidable || !hitbox.IsCollidable) return false;
+
+        if (movable.X + movable.Width <= hitbox.X + hitbox.Width && movable.X >= hitbox.X
+            && movable.Y + movable.Height <= hitbox.Y + hitbox.Height && movable.Y >= hitbox.Y)
+        {
+            LastFullEnterCollisionId = hitbox.Id;
+            return true;
+        }
+
+        return false;
+    }
     public static bool DetectFullEnterCollision(Hitbox movable, List<Hitbox> hitboxes)
     {
+        if (!movable.IsCollidable) return false;
+
         foreach (var hitbox in hitboxes)
+        {
+            if (!hitbox.IsCollidable) continue;
             if (movable.X + movable.Width <= hitbox.X + hitbox.Width && movable.X >= hitbox.X
                 && movable.Y + movable.Height <= hitbox.Y + hitbox.Height && movable.Y >= hitbox.Y)
             {
                 LastFullEnterCollisionId = hitbox.Id;
                 return true;
             }
+        }
         return false;
     }
     public static bool DetectPartialEnterCollision(Hitbox movable, List<Hitbox> hitboxes)
     {
+        if (!movable.IsCollidable) return false;
+
         foreach (var hitbox in hitboxes)
+        {
+            if (!hitbox.IsCollidable) continue;
             if (movable.X + movable.Width >= hitbox.X && movable.X <= hitbox.X + hitbox.Width
                 && movable.Y + movable.Height >= hitbox.Y && movable.Y <= hitbox.Y + hitbox.Height)
             {
@@ -45,13 +80,31 @@ public static class Collider
                 lastPartialEnteredHitbox = hitbox;
                 return true;
             }
+        }
+        return false;
+    }
+    public static bool DetectPartialEnterCollision(Hitbox movable, Hitbox hitbox)
+    {
+        if (!movable.IsCollidable || !hitbox.IsCollidable) return false;
+
+        if (movable.X + movable.Width >= hitbox.X && movable.X <= hitbox.X + hitbox.Width
+            && movable.Y + movable.Height >= hitbox.Y && movable.Y <= hitbox.Y + hitbox.Height)
+        {
+            LastPartialEnterCollisionId = hitbox.Id;
+            lastPartialEnteredHitbox = hitbox;
+            return true;
+        }
         return false;
     }
 
     public static bool DetectAccuratelyPartialEnterCollision(Hitbox movable, List<Hitbox> hitboxes)
     {
+        if (!movable.IsCollidable) return false;
+
         foreach (var hitbox in hitboxes)
         {
+            if (!hitbox.IsCollidable) continue;
+
             if (
                 (movable.X > hitbox.X + hitbox.Width && movable.PreviousX >= hitbox.X + hitbox.Width)
                 || (movable.X + movable.Width < hitbox.X && movable.PreviousX + movable.Width <= hitbox.X)
@@ -94,17 +147,6 @@ public static class Collider
     {
         return _isAternativeVectorCheck ? new PointF(position[0] - movable.ModifierX, movable.Y - movable.ModifierY)
             : new PointF(position[0] - movable.Width - movable.ModifierX, movable.Y - movable.ModifierY);
-    }
-
-    public static bool DetectGroundEnterCollision(Hitbox movable, Hitbox hitbox)
-    {
-        if (movable.X + movable.Width >= hitbox.X && movable.X <= hitbox.X + hitbox.Width
-            && movable.Y + movable.Height <= hitbox.Y + hitbox.Height)
-        {
-            LastGroundEnterCollisionId = hitbox.Id;
-            return true;
-        }
-        return false;
     }
 
     private static float[] CheckSkippedDistance(Hitbox box, Hitbox checkBox)

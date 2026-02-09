@@ -1,13 +1,18 @@
-﻿namespace EU_values.Utilities;
+﻿using EU_values.Game.MainLoopUtilities.StateManagement.Scenes.SceneDataUtils;
+using System.Text.Json;
 
-public class SettingsApplier
+namespace EU_values.Utilities;
+
+public static class SettingsApplier
 {
-    public GameSettings gameSettings = new GameSettings();
-    private Dictionary<int, int> _settings = new Dictionary<int, int>();
+    public static GameSettings Settings = new();
 
-    private string _filePath = "..\\..\\..\\Docs\\Settings\\GameSettings.txt";
+    private static string _filePath = "..\\..\\..\\Docs\\Settings\\GameSettings.json";
 
-    public void ReadSettings()
+    public static bool IsPropertyChanged = false;
+
+
+    public static void ReadSettings()
     {
         if (!File.Exists(_filePath))
         {
@@ -15,26 +20,24 @@ public class SettingsApplier
             return;
         }
 
-        var lines = File.ReadAllLines(_filePath).ToList();
-
-        foreach (var line in lines) {
-            var splited = line.Split('_');
-            string key = splited[0];
-            int value = int.Parse(splited[1]);
-        }
+        string source = File.ReadAllText(_filePath);
+        var tempData = JsonSerializer.Deserialize<GameSettings>(source);
+        if (tempData != null) Settings = tempData;
     }
 
-    public void WriteSettings()
+    public static void WriteSettings()
     {
-        File.WriteAllLines(_filePath, PrepareData());
+        string jsonString = JsonSerializer.Serialize(Settings);
+        File.WriteAllText(_filePath, jsonString);
     }
 
-    private List<string> PrepareData()
+    public static int ToggleScereenMode()
     {
-        List<string> data = new List<string>();
-
-
-
-            return data;
+        IsPropertyChanged = true;
+        Settings.ScreenMode = Settings.ScreenMode == 0 ? 1 : 0;
+        WriteSettings();
+        return Settings.ScreenMode;
     }
+
+    public static void OnChangesApplied() => IsPropertyChanged = false;
 }
