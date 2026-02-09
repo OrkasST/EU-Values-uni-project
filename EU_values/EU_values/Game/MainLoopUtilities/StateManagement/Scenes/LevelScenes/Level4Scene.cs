@@ -28,8 +28,9 @@ public class Level4Scene : InGameScene
         _pointer.ToggleVisibility(false);
         _playerInventory = new(name: "Level_4_PlayerInventory", x: 400, y: 40, inventorySize: 4);
 
-        _hint = new(name: "Action hint", x: _scales.Position.X - 128, y: _scales.Position.Y - 80, width: 512, height: 40,
-            text: "Press \"T\" to place item from inventory to scales cup", textX: 256, textY: 10, textSize: 20, isCameraAffected: true);
+        _hint = new(name: "Action hint", x: _scales.Position.X - 128, y: _scales.Position.Y - 80, width: 512, height: 60,
+            text: "Press \"T\" to place item from inventory to scales cup" +
+            "\nPress \"Y\" to take item", textX: 256, textY: 10, textSize: 20, isCameraAffected: true);
         _hint.Text.ChangeTextAlignment(TextPositioning.Center);
         _hint.ToggleVisibility(false);
 
@@ -65,7 +66,7 @@ public class Level4Scene : InGameScene
             _scales.LeftCupHitbox))
         {
             _pointer.ToggleVisibility(true);
-            _pointer.Position = new PointF(_scales.Position.X + 51, _scales.Position.Y + 15);
+            _pointer.Position = new PointF(_scales.LeftCupPosition.X + 51, _scales.LeftCupPosition.Y + 12);
             _scales.SelectedCup = Cups.Left;
             _hint.ToggleVisibility(true);
         }
@@ -74,7 +75,7 @@ public class Level4Scene : InGameScene
             _scales.RightCupHitbox))
         {
             _pointer.ToggleVisibility(true);
-            _pointer.Position = new PointF(_scales.Position.X + 194, _scales.Position.Y + 15);
+            _pointer.Position = new PointF(_scales.RightCupPosition.X + 194, _scales.RightCupPosition.Y + 12);
             _scales.SelectedCup = Cups.Right;
             _hint.ToggleVisibility(true);
         }

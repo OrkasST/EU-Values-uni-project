@@ -6,6 +6,7 @@ using EU_values.Game.MainLoopUtilities.StateManagement.Scenes.LevelScenes.Window
 using EU_values.Game.UI.Elements;
 using EU_values.Utilities;
 using EU_values.Utilities.Events;
+using System.Drawing;
 
 namespace EU_values.Game.MainLoopUtilities.StateManagement.Scenes.LevelScenes;
 
@@ -17,14 +18,23 @@ public class Level6Scene : InGameScene
     private bool _isAcceptorSelected = false;
 
     private Level6AcceptorWindow? _selectedAcceptor;
+    private GameWindow _hint;
 
     public Level6Scene(GameLevels previousLevel) : base(previousLevel)
     {
         _background = new Box("Level_2_Background", 0, 0, 4500, 2000, Image.FromFile("..\\..\\..\\Resources\\Images\\Levels\\Level_6\\Level_6_Background.png"), true);
         _playerInventory = new(name: "Level_4_PlayerInventory", x: 400, y: 40, inventorySize: 6);
 
+        _hint = new(name: "Action hint", x: 0, y: 0, width: 400, height: 60,
+            text: "Press \"T\" to place item from inventory" +
+            "\nPress \"Y\" to take item", textX: 200, textY: 10, textSize: 20, isCameraAffected: true);
+        _hint.Text.ChangeTextAlignment(TextPositioning.Center);
+        _hint.Background.ChangeBackground(Color.FromArgb(100, Color.Black));
+        _hint.ToggleVisibility(false);
+
         RenderList.AddObject(0, _background);
         RenderList.AddObject(1, _player.Body);
+        RenderList.AddObject(2, _hint);
 
         foreach (string s in _iconNames)
         {
@@ -68,6 +78,12 @@ public class Level6Scene : InGameScene
             if (Collider.DetectFullEnterCollision(new PointF(_player.Body.Position.X + _player.Body.Size.Width / 2, _player.Body.Position.Y + _player.Body.Size.Height / 2),
                 obj.InteractiveArea))
             {
+                if (!_hint.IsVisible)
+                {
+                    _hint.ChangePosition(obj.Position.X - 140, obj.Position.Y - 70);
+                    _hint.ToggleVisibility(true);
+                }
+
                 obj.Select();
                 _isAcceptorSelected = true;
                 _selectedAcceptor = obj;
@@ -76,6 +92,7 @@ public class Level6Scene : InGameScene
             {
                 obj.Deselect();
                 _selectedAcceptor = null;
+                _hint.ToggleVisibility(false);
             }
         }
     }

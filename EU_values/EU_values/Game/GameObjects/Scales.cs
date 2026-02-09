@@ -15,6 +15,9 @@ public class Scales : ComplexDrawableObject
     private Box _topCup;
     public Box _crossbar;
 
+    public PointF LeftCupPosition { get; private set; }
+    public PointF RightCupPosition { get; private set; }
+
     public PointF LeftCupCenterPosition { get; private set; }
     public PointF RightCupCenterPosition { get; private set; }
     public PointF MiddleCupCenterPosition { get; private set; }
@@ -64,13 +67,16 @@ public class Scales : ComplexDrawableObject
         LeftCupCenterPosition = new PointF(Position.X + 51, Position.Y);
         RightCupCenterPosition = new PointF(Position.X + 194, Position.Y);
         MiddleCupCenterPosition = new PointF(Position.X + 123, Position.Y - 128);
+
+        LeftCupPosition = _leftCup.Position;
+        RightCupPosition = _rightCup.Position;
     }
 
     public override void Update(float timeDelta, int timeRemaining, int timeDifference)
     {
         if (_rotationDirection != 0)
         {
-            if (!(_crossbar.Rotation <= -50 && _rotationDirection == -1) && !(_crossbar.Rotation >= 50 && _rotationDirection == 1))
+            if (!(_crossbar.Rotation <= -30 && _rotationDirection == -1) && !(_crossbar.Rotation >= 30 && _rotationDirection == 1))
             {
                 _rotationSpeed = (float)Math.Abs(ItemsLeft - ItemsRight) / (float)Math.Max(ItemsRight, ItemsLeft);
                 if (_rotationSpeed == 0 || float.IsNaN(_rotationSpeed)) _rotationSpeed = 0.2f;
@@ -80,11 +86,17 @@ public class Scales : ComplexDrawableObject
                 {
                     _leftCup.Position = new(_leftCup.Position.X, _leftCup.Position.Y + _rotationSpeed);
                     _rightCup.Position = new(_rightCup.Position.X, _rightCup.Position.Y - _rotationSpeed);
+
+                    LeftCupPosition = _leftCup.Position;
+                    RightCupPosition = _rightCup.Position;
                 }
                 else if (_rotationDirection > 0)
                 {
                     _leftCup.Position = new(_leftCup.Position.X, _leftCup.Position.Y - _rotationSpeed);
                     _rightCup.Position = new(_rightCup.Position.X, _rightCup.Position.Y + _rotationSpeed);
+
+                    LeftCupPosition = _leftCup.Position;
+                    RightCupPosition = _rightCup.Position;
                 }
             }
         }
