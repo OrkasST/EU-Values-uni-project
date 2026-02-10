@@ -104,7 +104,7 @@ public class Level3Scene: InGameScene
             if (!_playerInventory.ItemDescriptionWindow.IsVisible) _playerInventory.ShowItemDescription("\nPress \"R\" to close");
             else _playerInventory.HideItemDescription();
         }
-        else if (InputHandler.LastKeyboardEvent.Key == Keys.F4 && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
+        else if (_isInDeveloperMode && InputHandler.LastKeyboardEvent.Key == Keys.F4 && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
         {
             InputHandler.LastKeyboardEvent.IsHandled = true;
             foreach (var letter in _letters)

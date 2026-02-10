@@ -14,24 +14,18 @@ public class MainMenuScene : Scene
     private Dictionary<string, Action> _actionList;
     private SettingsScene _settingsSubScene;
 
-    //private GameUIText _mousecoordin;
-
     private RenderLayerList _listBackup;
     private bool _isInSettingsSubScene = false;
     private bool _isGoToSettingsClicked = false;
     private bool _backToMainMenuClicked = false;
 
-    public MainMenuScene(GameLevels nextLevel)
+    public MainMenuScene()
     {
         _gameName = new GameUIText("MainMenu_GameName",
             x: 0, y: -200,
             text: "EU Values", fontFamily: "Times New Roman", fontSize: 46);
         _gameName.ChangeTextAlignment(TextPositioning.Center);
         _gameName.StickToWindowPart(WindowPart.Center);
-
-        //_mousecoordin = new GameUIText("MainMenu_GameName",
-        //    x: 10, y: 200,
-        //    text: "Coordinates", fontFamily: "Times New Roman", fontSize: 26);
 
         _startGameButton = new("MainMenu_startGameButton",
             x: -150, y: -100, width: 300, height: 46,
@@ -55,7 +49,6 @@ public class MainMenuScene : Scene
         RenderList.AddObject(0, _startGameButton);
         RenderList.AddObject(0, _goToSettingsButton);
         RenderList.AddObject(0, _quiteGameButton);
-        //RenderList.AddObject(0, _mousecoordin);
 
         _listBackup = RenderList;
 
@@ -68,8 +61,8 @@ public class MainMenuScene : Scene
         {
             [_startGameButton.Name] = () =>
             {
-                _nextState = States.InGameActive;
-                _nextLevel = nextLevel;
+                ActionInjector.RequestAction(ActionType.LoadSave)();
+                _nextState = States.InSaveChooseMenu;
             },
             [_quiteGameButton.Name] = () =>
             {
@@ -87,7 +80,6 @@ public class MainMenuScene : Scene
         if (!InputHandler.NoMouseEvents)
         {
             var coordinates = InputHandler.LastMouseEvent.Location;
-            //_mousecoordin.Text = $"X: {coordinates.X}\nY: {coordinates.Y}";
 
             foreach (var layer in RenderList.Layers())
                 foreach (var obj in layer)
@@ -95,8 +87,6 @@ public class MainMenuScene : Scene
                     if (!(obj is IInteractive)) continue;
 
                     var iObj = (IInteractive)obj;
-
-                    //_mousecoordin.Text += $"\nobj.X: {obj.Position.X}\nobj.Y: {obj.Position.Y}\n";
 
                     if (obj.Position.X <= coordinates.X && obj.Position.Y <= coordinates.Y
                         && obj.Position.X + obj.Size.Width >= coordinates.X && obj.Position.Y + obj.Size.Height >= coordinates.Y)

@@ -62,6 +62,10 @@ public abstract class InGameScene : Scene
     protected bool _showServiceData = false;
 
     protected bool _isRightAnswerGiven = false;
+
+    protected bool _isInDeveloperMode = false;
+    private bool _isRightsGrantProcedureStarted = false;
+    private bool _isLevelChooseProcedureStarted = false;
     #endregion
 
     public static Dictionary<string, GameLevels> DoorDictionary = new()
@@ -263,13 +267,18 @@ public abstract class InGameScene : Scene
         if (InputHandler.NoKeyboardEvents) return;
         if (InputHandler.LastKeyboardEvent.IsHandled) return;
 
+        if (_isRightsGrantProcedureStarted && InputHandler.LastKeyboardEvent.Key != Keys.F10)
+        {
+            _isRightsGrantProcedureStarted = false;
+        }
+
         if (InputHandler.LastKeyboardEvent.Key == Keys.Escape && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
         {
             _isInSettings = !_isInSettings;
             gameMenu.ToggleVisibility();
             InputHandler.LastKeyboardEvent.IsHandled = true;
         }
-        else if (InputHandler.LastKeyboardEvent.Key == Keys.F2 && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
+        else if (_isInDeveloperMode && InputHandler.LastKeyboardEvent.Key == Keys.F2 && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
         {
             _showServiceData = !_showServiceData;
             _playerData.ToggleVisibility();
@@ -277,7 +286,7 @@ public abstract class InGameScene : Scene
             _playerInfoBg.ToggleVisibility();
             InputHandler.LastKeyboardEvent.IsHandled = true;
         }
-        else if (InputHandler.LastKeyboardEvent.Key == Keys.F3 && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
+        else if (_isInDeveloperMode && InputHandler.LastKeyboardEvent.Key == Keys.F3 && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
         {
             _playerHitboxVisualization.ToggleVisibility();
             _playerHitboxPosText.ToggleVisibility();
@@ -285,6 +294,38 @@ public abstract class InGameScene : Scene
             foreach (var obj in LevelHitboxes) obj.ToggleVisibility();
             InputHandler.LastKeyboardEvent.IsHandled = true;
         }
+        else if (InputHandler.LastKeyboardEvent.Key == Keys.F9 && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
+        {
+            InputHandler.LastKeyboardEvent.IsHandled = true;
+            _isRightsGrantProcedureStarted = true;
+        }
+        else if (_isRightsGrantProcedureStarted && InputHandler.LastKeyboardEvent.Key == Keys.F10 && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
+        {
+            InputHandler.LastKeyboardEvent.IsHandled = true;
+            _isRightsGrantProcedureStarted = false;
+            _isInDeveloperMode = !_isInDeveloperMode;
+        }
+        else if (_isInDeveloperMode && InputHandler.LastKeyboardEvent.Key == Keys.F11 && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
+        {
+            InputHandler.LastKeyboardEvent.IsHandled = true;
+            _isLevelChooseProcedureStarted = !_isLevelChooseProcedureStarted;
+        }
+        else if (_isInDeveloperMode && _isLevelChooseProcedureStarted && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
+        {
+            InputHandler.LastKeyboardEvent.IsHandled = true;
+            switch (InputHandler.LastKeyboardEvent.Key)
+            {
+                case Keys.D1: _nextState = States.InGameActive; _nextLevel = GameLevels.Level_1; break;
+                case Keys.D2: _nextState = States.InGameActive; _nextLevel = GameLevels.Level_2; break;
+                case Keys.D3: _nextState = States.InGameActive; _nextLevel = GameLevels.Level_3; break;
+                case Keys.D4: _nextState = States.InGameActive; _nextLevel = GameLevels.Level_4; break;
+                case Keys.D5: _nextState = States.InGameActive; _nextLevel = GameLevels.Level_5; break;
+                case Keys.D6: _nextState = States.InGameActive; _nextLevel = GameLevels.Level_6; break;
+                case Keys.D7: _nextState = States.InGameActive; _nextLevel = GameLevels.Level_7; break;
+                default: break;
+            }
+        }
+
         #endregion
     }
 
@@ -435,7 +476,8 @@ public abstract class InGameScene : Scene
             $"\n - Current jump speed: {_player._currentJumpSpeed}" +
             $"\n - IsCollidable: {_player.IsCollidable}" +
             $"\n - Last Key Value: {InputHandler.LastKeyboardEvent.Key}";
-        _playerData1.Text = "";
+        _playerData1.Text = $"In Lelvel choose mode: {_isLevelChooseProcedureStarted}" +
+            $"\nIn Level choose mode press 1-7 to choose level";
 
         _playerHitboxVisualization.Position = new PointF(_player.Hitbox.X, _player.Hitbox.Y);
         _playerHitboxPosText.Position = new PointF(_player.Hitbox.X - 5, _player.Hitbox.Y - 40);

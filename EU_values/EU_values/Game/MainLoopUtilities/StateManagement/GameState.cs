@@ -1,6 +1,6 @@
 ﻿namespace EU_values.Game.MainLoopUtilities.StateManagement;
 
-public enum States { None, NotInitialized, InMainMenu, InGameActive, IsUpdating, InGamePaused }
+public enum States { None, NotInitialized, InMainMenu, InGameActive, IsUpdating, InGamePaused, InSaveChooseMenu }
 
 public class GameState
 {

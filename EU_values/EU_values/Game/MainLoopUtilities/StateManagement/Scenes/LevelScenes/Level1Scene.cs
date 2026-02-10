@@ -114,7 +114,7 @@ public class Level1Scene: InGameScene
             InputHandler.LastKeyboardEvent.IsHandled = true;
             ShowQuestion();
         }
-        else if (InputHandler.LastKeyboardEvent.Key == Keys.F4 && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
+        else if (_isInDeveloperMode && InputHandler.LastKeyboardEvent.Key == Keys.F4 && InputHandler.LastKeyboardEvent.EventType == GameUserEventType.KeyUp)
         {
             InputHandler.LastKeyboardEvent.IsHandled = true;
             foreach (var mask in _masks)

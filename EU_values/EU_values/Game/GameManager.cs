@@ -8,7 +8,7 @@ using System.Text.Json;
 namespace EU_values.Game;
 
 public enum GameLevels { None, Level_1, Level_2, Level_3, Level_4, Level_5, Level_6, Level_7 }
-public enum ActionType { QuiteGame, SaveGame }
+public enum ActionType { QuiteGame, SaveGame, LoadSave }
 
 public class GameManager
 {
@@ -22,7 +22,9 @@ public class GameManager
     public Camera GameCamera { get; private set; }
 
     public static string SaveLocation = "..\\..\\..\\Docs\\Saves\\Save.json";
-    public SaveStructure GameInfo = new();
+
+    public static SaveStructure GameInfo = new();
+    public static int ChosenSave { get; set; } = 0;
 
     public GameManager() {
         _renderer = new Renderer(Color.Black);
@@ -33,6 +35,10 @@ public class GameManager
         State = new GameState();
         Clock = new Clock();
         GameCamera = new Camera();
+
+        GameInfo.Fields.Add(new SaveField());
+        GameInfo.Fields.Add(new SaveField());
+        GameInfo.Fields.Add(new SaveField());
     }
 
     public void Initialize(Form form)
@@ -42,7 +48,8 @@ public class GameManager
         ActionInjector.ApplyDictionary(new Dictionary<ActionType, Action>
         {
             [ActionType.QuiteGame] = () => { if (State.CurrentState == States.InGameActive) Save(); this.Quite(form); },
-            [ActionType.SaveGame] = () => { Save(); }
+            [ActionType.SaveGame] = () => { Save(); },
+            [ActionType.LoadSave] = () => { LoadSave(); }
         });
 
         if (SettingsApplier.Settings.ScreenMode == 1) _fullScreen.EnterFullScreenMode(form);
@@ -82,11 +89,16 @@ public class GameManager
             {
                 State.SetGameLevel(_currentScene.AwaitedLevel);
                 ChangeGameState(States.InGameActive);
-            } else if (_currentScene.AwaitedGameState == States.InMainMenu)
+            }
+            else if (_currentScene.AwaitedGameState == States.InMainMenu)
             {
-                GameInfo.Level = 1;
+                GameInfo.Fields[ChosenSave].Level = 1;
                 Save();
                 ChangeGameState(States.InMainMenu);
+            }
+            else if (_currentScene.AwaitedGameState == States.InSaveChooseMenu)
+            {
+                ChangeGameState(States.InSaveChooseMenu);
             }
         }
 
@@ -109,7 +121,8 @@ public class GameManager
         State.SetState(state);
         switch (state)
         {
-            case States.InMainMenu: LoadScene(new MainMenuScene(LoadSave())); break;
+            case States.InMainMenu: LoadScene(new MainMenuScene()); break;
+            case States.InSaveChooseMenu: LoadScene(new SaveChooseScene()); break;
 
             case States.InGameActive: LoadLevel(); break;
 
@@ -121,13 +134,13 @@ public class GameManager
     {
         switch (State.CurrentGameLevel)
         {
-            case GameLevels.Level_1: GameInfo.Level = 1; LoadScene(new Level1Scene(GameLevels.None)); break;
-            case GameLevels.Level_2: GameInfo.Level = 2; LoadScene(new Level2Scene(GameLevels.Level_1)); break;
-            case GameLevels.Level_3: GameInfo.Level = 3; LoadScene(new Level3Scene(GameLevels.Level_2)); break;
-            case GameLevels.Level_4: GameInfo.Level = 4; LoadScene(new Level4Scene(GameLevels.Level_3)); break;
-            case GameLevels.Level_5: GameInfo.Level = 5; LoadScene(new Level5Scene(GameLevels.Level_4)); break;
-            case GameLevels.Level_6: GameInfo.Level = 6; LoadScene(new Level6Scene(GameLevels.Level_5)); break;
-            case GameLevels.Level_7: GameInfo.Level = 7; LoadScene(new Level7Scene(GameLevels.Level_6)); break;
+            case GameLevels.Level_1: GameInfo.Fields[ChosenSave].Level = 1; LoadScene(new Level1Scene(GameLevels.None)); break;
+            case GameLevels.Level_2: GameInfo.Fields[ChosenSave].Level = 2; LoadScene(new Level2Scene(GameLevels.Level_1)); break;
+            case GameLevels.Level_3: GameInfo.Fields[ChosenSave].Level = 3; LoadScene(new Level3Scene(GameLevels.Level_2)); break;
+            case GameLevels.Level_4: GameInfo.Fields[ChosenSave].Level = 4; LoadScene(new Level4Scene(GameLevels.Level_3)); break;
+            case GameLevels.Level_5: GameInfo.Fields[ChosenSave].Level = 5; LoadScene(new Level5Scene(GameLevels.Level_4)); break;
+            case GameLevels.Level_6: GameInfo.Fields[ChosenSave].Level = 6; LoadScene(new Level6Scene(GameLevels.Level_5)); break;
+            case GameLevels.Level_7: GameInfo.Fields[ChosenSave].Level = 7; LoadScene(new Level7Scene(GameLevels.Level_6)); break;
             default: break;
         }
     }
@@ -139,28 +152,24 @@ public class GameManager
 
     private void Save()
     {
-        string jsonString = JsonSerializer.Serialize(GameInfo);
+        //string jsonString = JsonSerializer.Serialize(GameInfo);
+        string jsonString = "{\"Fields\":[";
+        for (int i = 0; i < GameInfo.Fields.Count; i++)
+        {
+            jsonString = $"{jsonString}{JsonSerializer.Serialize(GameInfo.Fields[i])}";
+            if (i < GameInfo.Fields.Count - 1) jsonString += ",";
+        }
+        jsonString = jsonString + "]}";
         File.WriteAllText(SaveLocation, jsonString);
     }
 
-    private GameLevels LoadSave()
+    private void LoadSave()
     {
-        if (!File.Exists(SaveLocation)) return GameLevels.Level_1;
+        if (!File.Exists(SaveLocation)) return;
 
         string source = File.ReadAllText(SaveLocation);
         var tempData = JsonSerializer.Deserialize<SaveStructure>(source);
         if (tempData != null) GameInfo = tempData;
-
-        switch (GameInfo.Level)
-        {
-            case 2: return GameLevels.Level_2;
-            case 3: return GameLevels.Level_3;
-            case 4: return GameLevels.Level_4;
-            case 5: return GameLevels.Level_5;
-            case 6: return GameLevels.Level_6;
-            case 7: return GameLevels.Level_7;
-            default: return GameLevels.Level_1;
-        }
     }
 
     private void Quite(Form form)
