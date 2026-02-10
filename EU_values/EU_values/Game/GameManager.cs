@@ -47,7 +47,7 @@ public class GameManager
 
         ActionInjector.ApplyDictionary(new Dictionary<ActionType, Action>
         {
-            [ActionType.QuiteGame] = () => { if (State.CurrentState == States.InGameActive) Save(); this.Quite(form); },
+            [ActionType.QuiteGame] = () => { Save(); this.Quite(form); },
             [ActionType.SaveGame] = () => { Save(); },
             [ActionType.LoadSave] = () => { LoadSave(); }
         });

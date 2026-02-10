@@ -28,6 +28,11 @@ public class SaveChooseScene : Scene
             chooseSaveBtn.ChangeTextAlignment(TextPositioning.Center);
             save.AddObject(chooseSaveBtn, 1);
 
+            var resetSaveBtn = new GameUIButton($"Save_{i}_btn_", x: 0, y: -600 + i * 400 + 50, width: 180, height: 50, text: "Reset save", textX: 90, textY: 10, textSize: 30);
+            resetSaveBtn.StickToWindowPart(WindowPart.Center);
+            resetSaveBtn.ChangeTextAlignment(TextPositioning.Center);
+            save.AddObject(resetSaveBtn, 1);
+
             _keys.Add(chooseSaveBtn.Name, i);
 
             _actionList.Add(chooseSaveBtn.Name, () =>
@@ -36,6 +41,12 @@ public class SaveChooseScene : Scene
                 _nextState = States.InGameActive;
                 _nextLevel = GameManager.GameInfo.Fields[_keys[chooseSaveBtn.Name]].Level > 0 ?
                 (GameLevels)GameManager.GameInfo.Fields[_keys[chooseSaveBtn.Name]].Level : GameLevels.Level_1;
+            });
+            _actionList.Add(resetSaveBtn.Name, () =>
+            {
+                GameManager.GameInfo.Fields[_keys[resetSaveBtn.Name.Substring(0, resetSaveBtn.Name.Length-1)]].Level = 0;
+                ActionInjector.RequestAction(ActionType.SaveGame)();
+                _nextState = States.InSaveChooseMenu;
             });
 
             Saves.Add(save);
